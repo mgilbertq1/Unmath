@@ -1,10 +1,10 @@
 "use client";
 
 import { useSearchParams, useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { Suspense, useState, useEffect } from "react";
 import Modal from "@/components/Modal";
 
-export default function Result() {
+function ResultContent() {
   const params = useSearchParams();
   const router = useRouter();
 
@@ -34,7 +34,7 @@ export default function Result() {
       if (raw) {
         try {
           setAnswers(JSON.parse(raw));
-        } catch {}
+        } catch { }
       }
     }
   }, [showReview]);
@@ -141,11 +141,10 @@ export default function Result() {
             {answers.map((ans, idx) => (
               <div
                 key={idx}
-                className={`p-4 rounded-lg border-l-4 ${
-                  ans.isCorrect
-                    ? "border-emerald-500 bg-emerald-50"
-                    : "border-red-500 bg-red-50"
-                }`}
+                className={`p-4 rounded-lg border-l-4 ${ans.isCorrect
+                  ? "border-emerald-500 bg-emerald-50"
+                  : "border-red-500 bg-red-50"
+                  }`}
               >
                 <p className="font-semibold text-slate-900">
                   {idx + 1}. {ans.question}
@@ -179,5 +178,13 @@ export default function Result() {
         </Modal>
       )}
     </main>
+  );
+}
+
+export default function Result() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><p>Loading...</p></div>}>
+      <ResultContent />
+    </Suspense>
   );
 }
