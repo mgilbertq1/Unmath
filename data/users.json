@@ -186,8 +186,190 @@
     "username": "konyol",
     "passwordHash": "$2b$12$vpGs2RQ5CPcEGfa495.rK.yoqjUbUdCNRW/tbMuLaLVvfwfpVXm5K",
     "createdAt": "2026-02-24T02:28:16.243Z",
+    "totalXP": 130,
+    "gems": 75,
+    "avatar": "👩‍🎓",
+    "loginStreak": 1,
+    "longestStreak": 1,
+    "lastLoginDate": "2026-03-03",
+    "dailyTarget": 30,
+    "levels": {
+      "math": [
+        {
+          "id": 1,
+          "status": "completed",
+          "bestStars": 1,
+          "bestXP": 20
+        },
+        {
+          "id": 2,
+          "status": "completed",
+          "bestStars": 1,
+          "bestXP": 25
+        },
+        {
+          "id": 3,
+          "status": "available",
+          "bestStars": 0,
+          "bestXP": 0
+        },
+        {
+          "id": 4,
+          "status": "locked",
+          "bestStars": 0,
+          "bestXP": 0
+        },
+        {
+          "id": 5,
+          "status": "locked",
+          "bestStars": 0,
+          "bestXP": 0
+        }
+      ],
+      "pkn": [
+        {
+          "id": 1,
+          "status": "available",
+          "bestStars": 0,
+          "bestXP": 0
+        },
+        {
+          "id": 2,
+          "status": "locked",
+          "bestStars": 0,
+          "bestXP": 0
+        },
+        {
+          "id": 3,
+          "status": "locked",
+          "bestStars": 0,
+          "bestXP": 0
+        },
+        {
+          "id": 4,
+          "status": "locked",
+          "bestStars": 0,
+          "bestXP": 0
+        },
+        {
+          "id": 5,
+          "status": "locked",
+          "bestStars": 0,
+          "bestXP": 0
+        }
+      ]
+    },
+    "dailyHistory": [
+      {
+        "date": "2026-03-03",
+        "xp": 130,
+        "levelsPlayed": 0
+      }
+    ],
+    "badges": [
+      {
+        "id": "first_win",
+        "name": "Pemenang Pertama",
+        "description": "Selesaikan level pertamamu",
+        "emoji": "🏆",
+        "earned": true
+      },
+      {
+        "id": "streak_3",
+        "name": "3 Hari Berturut",
+        "description": "Main 3 hari berturut-turut",
+        "emoji": "🔥",
+        "earned": false
+      },
+      {
+        "id": "streak_7",
+        "name": "Seminggu Juara",
+        "description": "Main 7 hari berturut-turut",
+        "emoji": "🌟",
+        "earned": false
+      },
+      {
+        "id": "all_math",
+        "name": "Master Matematika",
+        "description": "Selesaikan semua level Matematika",
+        "emoji": "📐",
+        "earned": false
+      },
+      {
+        "id": "all_pkn",
+        "name": "Warga Negara Teladan",
+        "description": "Selesaikan semua level PKN",
+        "emoji": "🏛️",
+        "earned": false
+      },
+      {
+        "id": "perfect_level",
+        "name": "Sempurna!",
+        "description": "Raih 3 bintang di satu level",
+        "emoji": "💯",
+        "earned": false
+      },
+      {
+        "id": "speed_demon",
+        "name": "Si Kilat",
+        "description": "Jawab 5 soal berturut benar",
+        "emoji": "⚡",
+        "earned": false
+      },
+      {
+        "id": "gem_spender",
+        "name": "Big Spender",
+        "description": "Belanja item di toko pertama kali",
+        "emoji": "💎",
+        "earned": false
+      }
+    ],
+    "shopItems": [
+      {
+        "id": "heart_refill",
+        "name": "Isi Nyawa",
+        "description": "Isi ulang 5 nyawa instan",
+        "emoji": "❤️",
+        "price": 15,
+        "owned": 0,
+        "maxStack": 5
+      },
+      {
+        "id": "streak_freeze",
+        "name": "Streak Freeze",
+        "description": "Pertahankan streak 1 hari walau tidak main",
+        "emoji": "❄️",
+        "price": 20,
+        "owned": 0,
+        "maxStack": 3
+      },
+      {
+        "id": "double_xp",
+        "name": "Double XP",
+        "description": "2x XP untuk sesi berikutnya",
+        "emoji": "⭐",
+        "price": 50,
+        "owned": 0,
+        "maxStack": 3
+      },
+      {
+        "id": "dark_theme",
+        "name": "Tema Gelap",
+        "description": "Unlock tema warna gelap eksklusif",
+        "emoji": "🌙",
+        "price": 100,
+        "owned": 0,
+        "maxStack": 1
+      }
+    ]
+  },
+  {
+    "id": "7b7cd624-247a-406c-b762-3d222a814912",
+    "username": "testuser",
+    "passwordHash": "$2b$12$sAIUJ7GhCGvwXGiMrSbYO.DSByFr7tWNgYE7IgZONNTKdI0mYm5We",
+    "createdAt": "2026-03-03T11:21:44.523Z",
     "totalXP": 0,
-    "gems": 50,
+    "gems": 0,
     "avatar": "🦊",
     "loginStreak": 0,
     "longestStreak": 0,
@@ -315,7 +497,7 @@
         "name": "Big Spender",
         "description": "Belanja item di toko pertama kali",
         "emoji": "💎",
-        "earned": false
+        "earned": true
       }
     ],
     "shopItems": [
@@ -343,7 +525,7 @@
         "description": "2x XP untuk sesi berikutnya",
         "emoji": "⭐",
         "price": 50,
-        "owned": 0,
+        "owned": 1,
         "maxStack": 3
       },
       {

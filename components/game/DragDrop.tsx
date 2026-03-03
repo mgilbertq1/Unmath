@@ -90,7 +90,7 @@ export default function DragDrop({
         onSubmit(answer);
     };
 
-    const accentColor = subject === 'math' ? '#6366f1' : '#10b981';
+    const accentColor = subject === 'math' ? '#A47551' : '#6D8299';
 
     return (
         <div className="space-y-4">
@@ -103,23 +103,23 @@ export default function DragDrop({
                         const isWrongPair = checked && !correctAnswer.includes(expectedPair);
 
                         let rightStyle: React.CSSProperties = {
-                            background: 'rgba(255,255,255,0.05)',
-                            border: '2px solid rgba(255,255,255,0.1)',
+                            background: 'var(--bg-surface-soft)',
+                            border: '2px solid var(--border-subtle)',
                         };
-                        let rightTextClass = 'text-white/80';
+                        let rightTextClass = 'text-[var(--text-primary)]';
 
                         if (isCorrectPair) {
                             rightStyle = {
-                                background: 'rgba(16,185,129,0.15)',
-                                border: '2px solid rgba(16,185,129,0.4)',
+                                background: 'rgba(122,158,126,0.15)',
+                                border: '2px solid rgba(122,158,126,0.4)',
                             };
-                            rightTextClass = 'text-emerald-300';
+                            rightTextClass = 'text-[var(--jawa-sage)]';
                         } else if (isWrongPair) {
                             rightStyle = {
-                                background: 'rgba(239,68,68,0.15)',
-                                border: '2px solid rgba(239,68,68,0.4)',
+                                background: 'rgba(164,117,81,0.15)',
+                                border: '2px solid rgba(164,117,81,0.4)',
                             };
-                            rightTextClass = 'text-red-300';
+                            rightTextClass = 'text-[var(--jawa-batik)]';
                         }
 
                         return (
@@ -131,7 +131,7 @@ export default function DragDrop({
                                 className="flex items-center gap-3"
                             >
                                 {/* Left side - fixed */}
-                                <div className="flex-1 rounded-xl p-3 text-sm font-semibold text-white/80"
+                                <div className="flex-1 rounded-xl p-3 text-sm font-semibold text-[var(--text-primary)]"
                                     style={{
                                         background: `${accentColor}15`,
                                         border: `2px solid ${accentColor}30`,
@@ -141,7 +141,7 @@ export default function DragDrop({
                                 </div>
 
                                 {/* Arrow */}
-                                <span className="text-white/20 text-lg">→</span>
+                                <span className="text-[var(--text-muted)] text-lg">→</span>
 
                                 {/* Right side - sortable */}
                                 <SortableContext items={rightItems} strategy={verticalListSortingStrategy}>
@@ -155,7 +155,7 @@ export default function DragDrop({
                                                 style={rightStyle}
                                             >
                                                 <span className="flex items-center gap-2">
-                                                    {!disabled && <span className="text-white/25">⠿</span>}
+                                                    {!disabled && <span className="text-[var(--text-muted)]">⠿</span>}
                                                     {currentRight}
                                                     {isCorrectPair && <span className="ml-auto">✓</span>}
                                                     {isWrongPair && <span className="ml-auto">✕</span>}
@@ -178,7 +178,7 @@ export default function DragDrop({
                     onClick={handleSubmit}
                     className="w-full mt-4 py-3.5 rounded-2xl font-bold text-white transition-all duration-200"
                     style={{
-                        background: `linear-gradient(135deg, ${accentColor}, ${subject === 'math' ? '#818cf8' : '#34d399'})`,
+                        background: `linear-gradient(135deg, ${accentColor}, ${subject === 'math' ? '#D8A47F' : '#7A9E7E'})`,
                         boxShadow: `0 4px 24px ${accentColor}33`,
                     }}
                 >

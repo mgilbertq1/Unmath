@@ -12,26 +12,29 @@ export default function LessonNode({
   active = false,
 }: LessonNodeProps) {
   let base =
-    "w-56 rounded-3xl p-4 shadow-sm border text-sm font-semibold transition relative";
+    "w-56 rounded-3xl p-4 border text-sm font-semibold transition relative backdrop-blur-sm";
 
   if (locked) {
-    base += " bg-slate-100 text-slate-400 border-slate-200";
+    base += " bg-[var(--bg-surface-soft)] text-[var(--text-muted)] border-[var(--border-subtle)]";
   } else if (active) {
-    base += " bg-sky-500 text-white border-sky-500";
+    base += " text-white border-[var(--border-medium)] shadow-lg";
   } else {
-    base += " bg-white text-slate-700 border-slate-200 hover:scale-[1.02]";
+    base += " bg-[var(--bg-card)] text-[var(--text-primary)] border-[var(--border-subtle)] hover:scale-[1.02] hover:shadow-md";
   }
 
   return (
-    <div className={base}>
-      <p>Level {label}</p>
-      <p className="text-xs opacity-70">5 soal • ±2 menit</p>
+    <div
+      className={base}
+      style={active ? { background: 'linear-gradient(135deg, var(--jawa-batik), var(--jawa-terracotta))' } : {}}
+    >
+      <p className={active ? 'text-white' : 'text-[var(--text-primary)]'}>Level {label}</p>
+      <p className={`text-xs ${active ? 'text-white/80' : 'text-[var(--text-secondary)]'}`}>5 soal • ±2 menit</p>
       {!locked && (
         <div className="mt-2 flex justify-center gap-1">
           {[...Array(3)].map((_, i) => (
             <span
               key={i}
-              className={`text-sm ${i < stars ? "text-amber-400" : "text-slate-300"}`}
+              className={`text-sm ${i < stars ? "text-[var(--jawa-gold)]" : active ? 'text-white/35' : "text-[var(--border-strong)]"}`}
             >
               ★
             </span>
@@ -39,7 +42,7 @@ export default function LessonNode({
         </div>
       )}
       {locked && (
-        <div className="absolute inset-0 bg-white/60 flex items-center justify-center rounded-3xl">
+        <div className="absolute inset-0 bg-[var(--bg-primary)]/45 flex items-center justify-center rounded-3xl">
           <span className="text-xl">🔒</span>
         </div>
       )}

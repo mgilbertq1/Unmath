@@ -2,7 +2,6 @@
 
 import { motion } from 'framer-motion';
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Logo from '@/components/Logo';
 import { useUserStore } from '@/lib/store/user-store';
@@ -10,7 +9,6 @@ import { useUserStore } from '@/lib/store/user-store';
 import { IconArrowLeft, IconEye, IconEyeOff } from '@/components/Icons';
 
 export default function RegisterPage() {
-    const router = useRouter();
     const [form, setForm] = useState({ username: '', password: '', confirm: '' });
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
@@ -57,25 +55,26 @@ export default function RegisterPage() {
     };
 
     const inputStyle = {
-        background: 'rgba(255,255,255,0.06)',
-        border: '1.5px solid rgba(255,255,255,0.1)',
+        background: 'var(--bg-surface-soft)',
+        border: '1.5px solid var(--border-subtle)',
     };
     const focusStyle = {
-        border: '1.5px solid rgba(99,102,241,0.5)',
-        boxShadow: '0 0 0 3px rgba(99,102,241,0.1)',
+        border: '1.5px solid var(--border-strong)',
+        boxShadow: '0 0 0 3px rgba(164,117,81,0.14)',
     };
-    const blurStyle = { border: '1.5px solid rgba(255,255,255,0.1)', boxShadow: 'none' };
+    const blurStyle = { border: '1.5px solid var(--border-subtle)', boxShadow: 'none' };
 
     return (
         <div
-            className="min-h-screen flex flex-col items-center justify-center px-6"
-            style={{ background: 'var(--bg-primary)' }}
+            className="min-h-screen flex flex-col items-center justify-center px-6 relative overflow-hidden"
         >
-            <Link href="/welcome" className="absolute top-6 left-6 text-white/30 hover:text-white/70 transition-colors">
+            <div className="absolute inset-0 pointer-events-none opacity-65" style={{ backgroundImage: 'var(--batik-pattern)', backgroundSize: '24px 24px' }} />
+
+            <Link href="/welcome" className="absolute top-6 left-6 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors z-10">
                 <IconArrowLeft size={24} />
             </Link>
 
-            <div className="w-full max-w-sm">
+            <div className="w-full max-w-sm relative z-10">
                 <motion.div
                     initial={{ opacity: 0, y: -16 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -90,13 +89,13 @@ export default function RegisterPage() {
                     transition={{ delay: 0.1 }}
                     className="glass-card-strong p-6"
                 >
-                    <h1 className="text-xl font-extrabold text-white mb-1">Daftar</h1>
-                    <p className="text-white/30 text-sm mb-6">Buat akunmu dan mulai belajar!</p>
+                    <h1 className="text-4xl font-heading leading-none text-[var(--text-primary)] mb-1">Daftar</h1>
+                    <p className="text-[var(--text-secondary)] text-sm mb-6">Buat akunmu dan mulai belajar!</p>
 
                     <form onSubmit={handleSubmit} className="space-y-4">
                         {/* Username */}
                         <div>
-                            <label className="text-xs font-bold text-white/40 uppercase tracking-wider block mb-1.5">
+                            <label className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider block mb-1.5">
                                 Username
                             </label>
                             <input
@@ -106,18 +105,18 @@ export default function RegisterPage() {
                                 placeholder="Pilih username unik"
                                 autoComplete="username"
                                 maxLength={20}
-                                className="w-full py-3 px-4 rounded-xl text-white text-sm outline-none transition-all duration-200"
+                                className="w-full py-3 px-4 rounded-xl text-[var(--text-primary)] text-sm outline-none transition-all duration-200"
                                 style={inputStyle}
                                 onFocus={(e) => Object.assign(e.target.style, focusStyle)}
                                 onBlur={(e) => Object.assign(e.target.style, blurStyle)}
                                 required
                             />
-                            <p className="text-xs text-white/20 mt-1">Huruf, angka, dan _ saja · {form.username.length}/20</p>
+                            <p className="text-xs text-[var(--text-muted)] mt-1">Huruf, angka, dan _ saja · {form.username.length}/20</p>
                         </div>
 
                         {/* Password */}
                         <div>
-                            <label className="text-xs font-bold text-white/40 uppercase tracking-wider block mb-1.5">
+                            <label className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider block mb-1.5">
                                 Password
                             </label>
                             <div className="relative">
@@ -127,7 +126,7 @@ export default function RegisterPage() {
                                     onChange={(e) => setForm({ ...form, password: e.target.value })}
                                     placeholder="Minimal 6 karakter"
                                     autoComplete="new-password"
-                                    className="w-full py-3 px-4 pr-12 rounded-xl text-white text-sm outline-none transition-all duration-200"
+                                    className="w-full py-3 px-4 pr-12 rounded-xl text-[var(--text-primary)] text-sm outline-none transition-all duration-200"
                                     style={inputStyle}
                                     onFocus={(e) => Object.assign(e.target.style, focusStyle)}
                                     onBlur={(e) => Object.assign(e.target.style, blurStyle)}
@@ -136,7 +135,7 @@ export default function RegisterPage() {
                                 <button
                                     type="button"
                                     onClick={() => setShowPass(!showPass)}
-                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60 transition-colors"
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
                                 >
                                     {showPass ? <IconEyeOff size={20} /> : <IconEye size={20} />}
                                 </button>
@@ -145,7 +144,7 @@ export default function RegisterPage() {
 
                         {/* Confirm Password */}
                         <div>
-                            <label className="text-xs font-bold text-white/40 uppercase tracking-wider block mb-1.5">
+                            <label className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider block mb-1.5">
                                 Konfirmasi Password
                             </label>
                             <input
@@ -154,7 +153,7 @@ export default function RegisterPage() {
                                 onChange={(e) => setForm({ ...form, confirm: e.target.value })}
                                 placeholder="Ulangi password"
                                 autoComplete="new-password"
-                                className="w-full py-3 px-4 rounded-xl text-white text-sm outline-none transition-all duration-200"
+                                className="w-full py-3 px-4 rounded-xl text-[var(--text-primary)] text-sm outline-none transition-all duration-200"
                                 style={inputStyle}
                                 onFocus={(e) => Object.assign(e.target.style, focusStyle)}
                                 onBlur={(e) => Object.assign(e.target.style, blurStyle)}
@@ -174,7 +173,7 @@ export default function RegisterPage() {
                                 initial={{ opacity: 0, y: -4 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 className="text-sm font-semibold rounded-xl px-4 py-2.5"
-                                style={{ background: 'rgba(239,68,68,0.12)', color: '#fca5a5' }}
+                                style={{ background: 'rgba(164,117,81,0.14)', color: 'var(--jawa-batik)' }}
                             >
                                 {error}
                             </motion.p>
@@ -187,8 +186,8 @@ export default function RegisterPage() {
                             whileTap={{ scale: 0.97 }}
                             className="w-full py-3.5 rounded-xl font-extrabold text-white text-sm tracking-wide transition-all mt-2"
                             style={{
-                                background: loading ? 'rgba(99,102,241,0.4)' : 'linear-gradient(135deg, #6366f1, #818cf8)',
-                                boxShadow: loading ? 'none' : '0 4px 24px rgba(99,102,241,0.35)',
+                                background: loading ? 'rgba(164,117,81,0.35)' : 'linear-gradient(135deg, var(--jawa-batik), var(--jawa-terracotta))',
+                                boxShadow: loading ? 'none' : '0 10px 24px rgba(164,117,81,0.28)',
                                 cursor: loading ? 'not-allowed' : 'pointer',
                             }}
                         >
@@ -201,10 +200,10 @@ export default function RegisterPage() {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.3 }}
-                    className="text-center text-white/30 text-sm mt-5"
+                    className="text-center text-[var(--text-secondary)] text-sm mt-5"
                 >
                     Sudah punya akun?{' '}
-                    <Link href="/login" className="text-indigo-400 font-bold hover:text-indigo-300 transition-colors">
+                    <Link href="/login" className="text-[var(--jawa-batik)] font-bold hover:text-[var(--jawa-terracotta)] transition-colors">
                         Masuk
                     </Link>
                 </motion.p>

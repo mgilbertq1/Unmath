@@ -20,8 +20,8 @@ export default function TrueFalse({
     subject,
 }: TrueFalseProps) {
     const cards = [
-        { label: 'BENAR', value: 'true', icon: '✓', gradient: 'linear-gradient(135deg, #059669, #10b981)' },
-        { label: 'SALAH', value: 'false', icon: '✕', gradient: 'linear-gradient(135deg, #dc2626, #ef4444)' },
+        { label: 'BENAR', value: 'true', icon: '✓', gradient: 'linear-gradient(135deg, #7A9E7E, #6D8299)' },
+        { label: 'SALAH', value: 'false', icon: '✕', gradient: 'linear-gradient(135deg, #A47551, #D8A47F)' },
     ];
 
     return (
@@ -33,33 +33,33 @@ export default function TrueFalse({
                 const showWrong = checked && isSelected && !isCorrectAnswer;
 
                 let bgStyle: React.CSSProperties = {
-                    background: 'rgba(255,255,255,0.05)',
-                    border: '2px solid rgba(255,255,255,0.08)',
+                    background: 'var(--bg-surface-soft)',
+                    border: '2px solid var(--border-subtle)',
                 };
-                let textClass = 'text-white/70';
+                let textClass = 'text-[var(--text-primary)]';
 
                 if (showCorrect) {
                     bgStyle = {
-                        background: 'linear-gradient(135deg, rgba(16,185,129,0.25), rgba(16,185,129,0.1))',
-                        border: '2px solid rgba(16,185,129,0.5)',
-                        boxShadow: '0 8px 32px rgba(16,185,129,0.25)',
+                        background: 'linear-gradient(135deg, rgba(122,158,126,0.25), rgba(122,158,126,0.1))',
+                        border: '2px solid rgba(122,158,126,0.5)',
+                        boxShadow: '0 8px 32px rgba(122,158,126,0.25)',
                     };
-                    textClass = 'text-emerald-300';
+                    textClass = 'text-[var(--jawa-sage)]';
                 } else if (showWrong) {
                     bgStyle = {
-                        background: 'linear-gradient(135deg, rgba(239,68,68,0.25), rgba(239,68,68,0.1))',
-                        border: '2px solid rgba(239,68,68,0.5)',
-                        boxShadow: '0 8px 32px rgba(239,68,68,0.25)',
+                        background: 'linear-gradient(135deg, rgba(164,117,81,0.25), rgba(164,117,81,0.1))',
+                        border: '2px solid rgba(164,117,81,0.5)',
+                        boxShadow: '0 8px 32px rgba(164,117,81,0.25)',
                     };
-                    textClass = 'text-red-300';
+                    textClass = 'text-[var(--jawa-batik)]';
                 } else if (isSelected) {
-                    const accent = subject === 'math' ? '99,102,241' : '16,185,129';
+                    const accent = subject === 'math' ? '164,117,81' : '109,130,153';
                     bgStyle = {
                         background: `linear-gradient(135deg, rgba(${accent},0.2), rgba(${accent},0.08))`,
                         border: `2px solid rgba(${accent},0.4)`,
                         boxShadow: `0 8px 32px rgba(${accent},0.2)`,
                     };
-                    textClass = subject === 'math' ? 'text-indigo-300' : 'text-emerald-300';
+                    textClass = subject === 'math' ? 'text-[var(--jawa-batik)]' : 'text-[var(--jawa-bluegray)]';
                 }
 
                 return (
@@ -100,7 +100,7 @@ export default function TrueFalse({
                             {card.label}
                         </span>
                         {!disabled && (
-                            <span className="text-xs opacity-30 mt-1">Tap atau swipe</span>
+                            <span className="text-xs opacity-60 mt-1 text-[var(--text-secondary)]">Tap atau swipe</span>
                         )}
                     </motion.button>
                 );

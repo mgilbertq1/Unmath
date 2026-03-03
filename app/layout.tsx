@@ -1,23 +1,31 @@
 import type { Metadata, Viewport } from "next";
-import { Plus_Jakarta_Sans, Sora } from "next/font/google";
+import { Cinzel_Decorative, Cormorant_Garamond, Poppins } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/components/AuthProvider";
 import AppShell from "@/components/AppShell";
 
-const plusJakartaSans = Plus_Jakarta_Sans({
+const poppins = Poppins({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700", "800"],
-  variable: "--font-jakarta",
+  variable: "--font-body",
   display: "swap",
   preload: true,
 });
 
-const sora = Sora({
+const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-sora",
+  weight: ["500", "600", "700"],
+  variable: "--font-heading",
   display: "swap",
   preload: true,
+});
+
+const cinzel = Cinzel_Decorative({
+  subsets: ["latin"],
+  weight: ["400", "700"],
+  variable: "--font-cinzel",
+  display: "swap",
+  preload: false,
 });
 
 export const metadata: Metadata = {
@@ -30,8 +38,10 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
-  themeColor: "#0f0d23",
+  themeColor: "#F6F1E9",
 };
+
+import { Agentation } from "agentation";
 
 export default function RootLayout({
   children,
@@ -39,11 +49,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="id" className={`${plusJakartaSans.variable} ${sora.variable}`}>
-      <body className="font-sora antialiased" style={{ background: '#0f0d23' }}>
+    <html lang="id" className={`${poppins.variable} ${cormorant.variable} ${cinzel.variable}`}>
+      <body className="font-body antialiased cultural-theme">
         <AuthProvider>
           <AppShell>
             {children}
+            {process.env.NODE_ENV === "development" && <Agentation />}
           </AppShell>
         </AuthProvider>
       </body>

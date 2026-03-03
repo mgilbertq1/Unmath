@@ -4,6 +4,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { Suspense } from 'react';
 import GameEngine from '@/components/game/GameEngine';
 import { getQuestionsForLevel, getLevelDefs } from '@/lib/levels/level-definitions';
+import WayangGameShell from '@/components/game/WayangGameShell';
 
 function PKNGame() {
   const params = useSearchParams();
@@ -20,11 +21,9 @@ function PKNGame() {
   const questions = getQuestionsForLevel('pkn', levelId);
 
   return (
-    <main className="theme-pkn">
-      <div className="relative z-10 p-4 sm:p-6 py-6 sm:py-10">
-        <GameEngine key={levelId} subject="pkn" levelId={levelId} questions={questions} />
-      </div>
-    </main>
+    <WayangGameShell subject="pkn">
+      <GameEngine key={levelId} subject="pkn" levelId={levelId} questions={questions} />
+    </WayangGameShell>
   );
 }
 

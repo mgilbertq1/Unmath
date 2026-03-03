@@ -1,7 +1,6 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { useState } from 'react';
 
 interface MultipleChoiceProps {
     options: string[];
@@ -22,96 +21,113 @@ export default function MultipleChoice({
     checked,
     subject,
 }: MultipleChoiceProps) {
-    const [flippedIdx, setFlippedIdx] = useState<number | null>(null);
-
-    const accentColor = subject === 'math' ? '#6366f1' : '#10b981';
-    const accentColorLight = subject === 'math' ? '#818cf8' : '#34d399';
+    const accentColor = subject === 'math' ? '#A47551' : '#6D8299';
 
     return (
-        <div className="grid grid-cols-1 gap-3">
+        <div className="flex flex-col gap-2.5">
             {options.map((opt, idx) => {
                 const isSelected = selectedAnswer === opt;
                 const showCorrect = checked && opt === correctAnswer;
                 const showWrong = checked && isSelected && opt !== correctAnswer;
-                const isFlipped = flippedIdx === idx;
+                const letter = String.fromCharCode(65 + idx);
 
-                let bgStyle: React.CSSProperties = {
-                    background: 'rgba(255,255,255,0.05)',
-                    border: '2px solid rgba(255,255,255,0.08)',
+                let containerStyle: React.CSSProperties = {
+                    background: 'rgba(255,248,235,0.04)',
+                    border: '1.5px solid rgba(198,167,94,0.15)',
                 };
-                let textClass = 'text-white/90';
-                let letterBg = 'rgba(255,255,255,0.08)';
-                let letterText = 'text-white/50';
+                let letterStyle: React.CSSProperties = {
+                    background: 'rgba(198,167,94,0.1)',
+                    border: '1px solid rgba(198,167,94,0.2)',
+                    color: '#C6A75E',
+                };
+                let leftBarColor = 'transparent';
 
                 if (showCorrect) {
-                    bgStyle = {
-                        background: 'linear-gradient(135deg, rgba(16,185,129,0.2), rgba(16,185,129,0.1))',
-                        border: '2px solid rgba(16,185,129,0.4)',
-                        boxShadow: '0 4px 24px rgba(16,185,129,0.2)',
+                    containerStyle = {
+                        background: 'rgba(122,158,126,0.13)',
+                        border: '1.5px solid rgba(122,158,126,0.4)',
+                        boxShadow: '0 0 18px rgba(122,158,126,0.22), -4px 0 0 #7A9E7E',
                     };
-                    textClass = 'text-emerald-300';
-                    letterBg = 'rgba(16,185,129,0.3)';
-                    letterText = 'text-emerald-300';
+                    letterStyle = { background: '#7A9E7E', color: '#fff', border: '1px solid #7A9E7E' };
+                    leftBarColor = '#7A9E7E';
                 } else if (showWrong) {
-                    bgStyle = {
-                        background: 'linear-gradient(135deg, rgba(239,68,68,0.2), rgba(239,68,68,0.1))',
-                        border: '2px solid rgba(239,68,68,0.4)',
-                        boxShadow: '0 4px 24px rgba(239,68,68,0.2)',
+                    containerStyle = {
+                        background: 'rgba(224,90,90,0.1)',
+                        border: '1.5px solid rgba(224,90,90,0.38)',
+                        boxShadow: '0 0 18px rgba(224,90,90,0.18), -4px 0 0 #E05A5A',
                     };
-                    textClass = 'text-red-300';
-                    letterBg = 'rgba(239,68,68,0.3)';
-                    letterText = 'text-red-300';
+                    letterStyle = { background: '#E05A5A', color: '#fff', border: '1px solid #E05A5A' };
+                    leftBarColor = '#E05A5A';
                 } else if (isSelected) {
-                    bgStyle = {
-                        background: `linear-gradient(135deg, ${accentColor}22, ${accentColor}11)`,
-                        border: `2px solid ${accentColor}66`,
-                        boxShadow: `0 4px 24px ${accentColor}22`,
+                    containerStyle = {
+                        background: `rgba(198,167,94,0.1)`,
+                        border: `1.5px solid rgba(198,167,94,0.5)`,
+                        boxShadow: `0 4px 20px rgba(164,117,81,0.22), -4px 0 0 #C6A75E`,
                     };
-                    textClass = subject === 'math' ? 'text-indigo-300' : 'text-emerald-300';
-                    letterBg = `${accentColor}33`;
-                    letterText = subject === 'math' ? 'text-indigo-300' : 'text-emerald-300';
+                    letterStyle = { background: accentColor, color: '#1A0903', border: `1px solid ${accentColor}` };
+                    leftBarColor = '#C6A75E';
                 }
 
                 return (
                     <motion.button
                         key={opt}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: idx * 0.08, duration: 0.3 }}
+                        initial={{ opacity: 0, x: -12 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: idx * 0.07, duration: 0.3 }}
                         disabled={disabled}
-                        onClick={() => {
-                            if (!disabled) {
-                                setFlippedIdx(idx);
-                                setTimeout(() => setFlippedIdx(null), 300);
-                                onSelect(opt);
-                            }
-                        }}
-                        whileHover={!disabled ? { scale: 1.02, y: -2 } : {}}
-                        whileTap={!disabled ? { scale: 0.97 } : {}}
-                        className={`
-                            relative w-full rounded-2xl py-4 px-5 font-semibold
-                            transition-all duration-200
-                            disabled:cursor-not-allowed
-                            ${textClass}
-                        `}
+                        onClick={() => !disabled && onSelect(opt)}
+                        whileHover={!disabled && !checked ? { x: 5, boxShadow: `0 4px 20px rgba(0,0,0,0.3), -3px 0 0 ${accentColor}` } : {}}
+                        whileTap={!disabled && !checked ? { scale: 0.98 } : {}}
+                        className="flex items-center gap-3 w-full text-left"
                         style={{
-                            ...bgStyle,
-                            minHeight: '56px',
-                            transform: isFlipped ? 'rotateY(10deg)' : 'rotateY(0deg)',
-                            perspective: '600px',
+                            ...containerStyle,
+                            padding: '13px 16px',
+                            borderRadius: 14,
+                            cursor: disabled ? 'not-allowed' : 'pointer',
+                            transition: 'all 0.2s cubic-bezier(.4,0,.2,1)',
                         }}
                     >
-                        <span className="flex items-center gap-3">
-                            <span className={`
-                                w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold
-                                ${letterText}
-                            `} style={{ background: letterBg }}>
-                                {String.fromCharCode(65 + idx)}
-                            </span>
-                            <span className="text-left flex-1">{opt}</span>
-                            {showCorrect && <span>✓</span>}
-                            {showWrong && <span>✕</span>}
+                        {/* Letter badge */}
+                        <span
+                            className="flex items-center justify-center font-bold shrink-0"
+                            style={{
+                                ...letterStyle,
+                                width: 32, height: 32,
+                                borderRadius: 9,
+                                fontSize: 12,
+                                transition: 'all 0.2s',
+                            }}
+                        >
+                            {letter}
                         </span>
+
+                        {/* Option text */}
+                        <span
+                            className="flex-1 font-semibold"
+                            style={{ fontSize: 14, color: '#E8D8C0' }}
+                        >
+                            {opt}
+                        </span>
+
+                        {/* Result icon */}
+                        {showCorrect && (
+                            <motion.span
+                                initial={{ scale: 0 }}
+                                animate={{ scale: 1 }}
+                                style={{ fontSize: 16, color: '#7A9E7E' }}
+                            >
+                                ✓
+                            </motion.span>
+                        )}
+                        {showWrong && (
+                            <motion.span
+                                initial={{ scale: 0 }}
+                                animate={{ scale: 1 }}
+                                style={{ fontSize: 16, color: '#E05A5A' }}
+                            >
+                                ✕
+                            </motion.span>
+                        )}
                     </motion.button>
                 );
             })}

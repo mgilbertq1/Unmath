@@ -1,12 +1,12 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
-import { useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useEffect, useRef, useState } from 'react';
 import confetti from 'canvas-confetti';
 import { AnswerRecord, Subject } from '@/lib/types';
 import { TOTAL_LEVELS } from '@/lib/levels/level-definitions';
-import { computeStars } from '@/lib/store/game-store';
+import { computeStars, calcGems } from '@/lib/store/game-store';
 
 interface ResultScreenProps {
     answers: AnswerRecord[];
@@ -39,9 +39,13 @@ export default function ResultScreen({
 }: ResultScreenProps) {
     const router = useRouter();
     const hasPlayedConfetti = useRef(false);
+    const [expandedPembahasan, setExpandedPembahasan] = useState<number | null>(null);
     const correctCount = answers.filter((a) => a.isCorrect).length;
     const accuracy = answers.length > 0 ? Math.round((correctCount / answers.length) * 100) : 0;
-    const gemsEarned = stars >= 3 ? 15 : stars >= 2 ? 10 : stars >= 1 ? 5 : 0;
+    const isPerfect = correctCount === answers.length && answers.length > 0;
+    const gemsEarned = calcGems(stars, isPerfect);
+    const wrongAnswers = answers.map((a, i) => ({ ...a, index: i })).filter((a) => !a.isCorrect);
+    const canProceed = stars >= 1;
 
     const isMath = subject === 'math';
     const accentColor = isMath ? '#6366f1' : '#10b981';
@@ -100,6 +104,21 @@ export default function ResultScreen({
                     <p className="text-sm text-white/40 mt-1">Level {levelId}</p>
                 </div>
 
+                {/* 0-star gate warning */}
+                {!isGameOver && stars === 0 && (
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: 0.3 }}
+                        className="rounded-2xl p-4 mb-5 text-center"
+                        style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.25)' }}
+                    >
+                        <p className="text-2xl mb-1">⚠️</p>
+                        <p className="font-bold text-red-300 text-sm">Nilai &lt; 60% — Wajib Ulang Level Ini!</p>
+                        <p className="text-xs text-white/40 mt-1">Selesaikan level dengan ≥60% untuk melanjutkan</p>
+                    </motion.div>
+                )}
+
                 {/* Stars */}
                 {!isGameOver && (
                     <div className="flex justify-center gap-3 mb-6">
@@ -148,7 +167,7 @@ export default function ResultScreen({
 
                 {/* Action buttons */}
                 <div className="flex flex-col gap-3">
-                    {!isGameOver && hasNextLevel && (
+                    {!isGameOver && hasNextLevel && canProceed && (
                         <motion.button
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
@@ -165,10 +184,17 @@ export default function ResultScreen({
                     )}
 
                     <motion.button
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 0.9 }}
-                        onClick={onRestart}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ delay: 0.85 }}
+                            onClick={() => router.push(`/game/${subject}?level=${levelId}`)}
+                            className="w-full py-3.5 rounded-2xl font-bold text-white/70 hover:text-white transition-colors"
+                            style={{ background: 'rgba(99,102,241,0.12)', border: '1px solid rgba(99,102,241,0.2)' }}
+                        >
+                            🔁 Pelajari Lagi
+                        </motion.button>
+
+                    <motion.button
                         className="w-full py-3.5 rounded-2xl font-bold text-white/60 hover:text-white transition-colors"
                         style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)' }}
                     >
@@ -186,6 +212,67 @@ export default function ResultScreen({
                     </motion.button>
                 </div>
             </motion.div>
+
+            {/* Pembahasan (wrong answers collapsible) – Task 3 */}
+            {wrongAnswers.length > 0 && (
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 1.1 }}
+                    className="mt-6"
+                >
+                    <h3 className="text-base font-bold text-white/60 mb-3">📚 Pembahasan Soal Salah</h3>
+                    <div className="space-y-2">
+                        {wrongAnswers.map((a) => (
+                            <div
+                                key={a.index}
+                                className="rounded-2xl overflow-hidden"
+                                style={{ background: 'rgba(239,68,68,0.05)', border: '1px solid rgba(239,68,68,0.15)' }}
+                            >
+                                <button
+                                    className="w-full flex items-start gap-2.5 p-3.5 text-left"
+                                    onClick={() => setExpandedPembahasan(expandedPembahasan === a.index ? null : a.index)}
+                                >
+                                    <span className="text-sm mt-0.5 shrink-0">❌</span>
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-white/70 font-medium text-sm line-clamp-2">{a.question}</p>
+                                    </div>
+                                    <span className="text-white/30 text-sm shrink-0 mt-0.5">{expandedPembahasan === a.index ? '▲' : '▼'}</span>
+                                </button>
+                                <AnimatePresence initial={false}>
+                                    {expandedPembahasan === a.index && (
+                                        <motion.div
+                                            key="pembahasan"
+                                            initial={{ height: 0, opacity: 0 }}
+                                            animate={{ height: 'auto', opacity: 1 }}
+                                            exit={{ height: 0, opacity: 0 }}
+                                            transition={{ duration: 0.25 }}
+                                            className="overflow-hidden"
+                                        >
+                                            <div className="px-3.5 pb-3.5 pt-0 space-y-2">
+                                                <div className="rounded-xl p-2.5" style={{ background: 'rgba(239,68,68,0.08)' }}>
+                                                    <p className="text-xs text-white/40">Jawabanmu:</p>
+                                                    <p className="text-sm font-bold text-red-300">{a.given || '(Tidak menjawab)'}</p>
+                                                </div>
+                                                <div className="rounded-xl p-2.5" style={{ background: 'rgba(16,185,129,0.08)' }}>
+                                                    <p className="text-xs text-white/40">Jawaban benar:</p>
+                                                    <p className="text-sm font-bold text-emerald-300">{a.correct}</p>
+                                                </div>
+                                                {a.explanation && (
+                                                    <div className="rounded-xl p-2.5" style={{ background: 'rgba(255,255,255,0.04)' }}>
+                                                        <p className="text-xs text-white/40 mb-1">💡 Penjelasan:</p>
+                                                        <p className="text-xs text-white/60 leading-relaxed">{a.explanation}</p>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                            </div>
+                        ))}
+                    </div>
+                </motion.div>
+            )}
 
             {/* Answer review */}
             <motion.div

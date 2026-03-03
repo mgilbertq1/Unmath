@@ -65,7 +65,15 @@ export type BadgeId =
     | 'all_pkn'
     | 'perfect_level'
     | 'speed_demon'
-    | 'gem_spender';
+    | 'gem_spender'
+    // NEW badges
+    | 'math_master'
+    | 'pkn_master'
+    | 'no_mistake'
+    | 'comeback'
+    | 'scholar_30'
+    | 'gem_hoarder'
+    | 'all_clear';
 
 export interface Badge {
     id: BadgeId;
@@ -75,7 +83,16 @@ export interface Badge {
     earned: boolean;
 }
 
-export type ShopItemId = 'streak_freeze' | 'double_xp' | 'heart_refill' | 'dark_theme';
+export type ShopItemId =
+    | 'streak_freeze'
+    | 'double_xp'
+    | 'heart_refill'
+    | 'dark_theme'
+    // NEW shop items
+    | 'hint'
+    | 'time_extend'
+    | 'second_chance'
+    | 'xp_boost_24h';
 
 export interface ShopItem {
     id: ShopItemId;
@@ -85,6 +102,45 @@ export interface ShopItem {
     price: number;          // gems
     owned: number;          // quantity owned
     maxStack: number;
+}
+
+// ─── Daily Lives ─────────────────────────────────────────────────
+export interface DailyLivesState {
+    dailyLives: number;         // 0-5
+    lastRegenTime: number;      // Unix timestamp ms
+}
+
+// ─── Daily Challenge ──────────────────────────────────────────────
+export type ChallengeType = 1 | 2 | 3 | 4;
+
+export interface DailyChallenge {
+    date: string;               // YYYY-MM-DD
+    type: ChallengeType;
+    progress: number;
+    completed: boolean;
+}
+
+// ─── Leaderboard ──────────────────────────────────────────────────
+export interface LeaderboardEntry {
+    username: string;
+    score: number;
+    stars: number;
+    date: string;
+    timeSeconds: number;
+}
+
+// ─── Game Result (for badge check) ───────────────────────────────
+export interface GameResult {
+    subject: 'math' | 'pkn';
+    levelId: number;
+    stars: number;
+    correctCount: number;
+    totalQuestions: number;
+    livesLeft: number;
+    bestStreak: number;
+    sessionTimeSeconds: number;
+    allLevelsMath: { bestStars: number }[];
+    allLevelsPkn: { bestStars: number }[];
 }
 
 // ─── Account Data ────────────────────────────────────────────────

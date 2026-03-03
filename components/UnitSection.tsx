@@ -1,12 +1,20 @@
 import LessonNode from "./LessonNode";
 
-export default function UnitSection({ title, subtitle }: any) {
+interface UnitSectionProps {
+  title: string;
+  subtitle: string;
+}
+
+export default function UnitSection({ title, subtitle }: UnitSectionProps) {
   return (
     <div className="mb-20">
 
-      <div className="bg-sky-500 text-white rounded-3xl p-6 shadow-sm">
-        <h2 className="text-lg font-bold">{title}</h2>
-        <p className="text-sm opacity-90">{subtitle}</p>
+      <div
+        className="text-white rounded-3xl p-6 shadow-sm border border-[var(--border-medium)]"
+        style={{ background: 'linear-gradient(145deg, var(--jawa-batik), var(--jawa-terracotta))' }}
+      >
+        <h2 className="text-2xl font-heading font-semibold leading-none">{title}</h2>
+        <p className="text-sm text-white/85 mt-1">{subtitle}</p>
       </div>
 
       <div className="mt-10 flex flex-col gap-5">

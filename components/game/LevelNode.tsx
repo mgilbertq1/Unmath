@@ -23,16 +23,16 @@ export default function LevelNode({ def, state, subject, onPlay }: LevelNodeProp
     const isCompleted = state.status === 'completed';
 
     const isMath = subject === 'math';
-    const accentColor = isMath ? '#6366f1' : '#10b981';
-    const accentLight = isMath ? '#818cf8' : '#34d399';
+    const accentColor = isMath ? '#A47551' : '#6D8299';
+    const accentLight = isMath ? '#D8A47F' : '#7A9E7E';
 
     const stars = state.bestStars;
 
     // Ring gradient based on state
     let ringStyle: React.CSSProperties = {};
     let bgStyle: React.CSSProperties = {
-        background: 'rgba(255,255,255,0.04)',
-        border: '3px solid rgba(255,255,255,0.06)',
+        background: 'rgba(255,255,255,0.65)',
+        border: '3px solid rgba(164,117,81,0.18)',
     };
 
     if (isCompleted) {
@@ -44,7 +44,7 @@ export default function LevelNode({ def, state, subject, onPlay }: LevelNodeProp
         bgStyle = {
             background: `${accentColor}15`,
             border: 'none',
-            boxShadow: `0 8px 32px ${accentColor}25`,
+            boxShadow: `0 8px 24px ${accentColor}33`,
         };
     } else if (isAvailable) {
         ringStyle = {
@@ -77,7 +77,7 @@ export default function LevelNode({ def, state, subject, onPlay }: LevelNodeProp
                 {isAvailable && (
                     <motion.div
                         className="absolute inset-0 rounded-full"
-                        style={{ background: `${accentColor}20` }}
+                        style={{ background: `${accentColor}25` }}
                         animate={{ scale: [1, 1.3, 1], opacity: [0.5, 0, 0.5] }}
                         transition={{ duration: 2, repeat: Infinity }}
                     />
@@ -92,7 +92,7 @@ export default function LevelNode({ def, state, subject, onPlay }: LevelNodeProp
                     ) : (
                         <>
                             <span className="text-3xl sm:text-4xl">{def.emoji}</span>
-                            <span className="text-xs font-bold text-white/50 mt-0.5">
+                            <span className="text-xs font-bold text-[var(--text-secondary)] mt-0.5">
                                 Level {def.id}
                             </span>
                         </>
@@ -101,7 +101,7 @@ export default function LevelNode({ def, state, subject, onPlay }: LevelNodeProp
             </motion.button>
 
             {/* Title */}
-            <p className={`text-xs font-bold text-center leading-tight ${isLocked ? 'text-white/20' : 'text-white/70'}`}>
+            <p className={`text-xs font-bold text-center leading-tight ${isLocked ? 'text-[var(--text-muted)]' : 'text-[var(--text-primary)]'}`}>
                 {def.title}
             </p>
 
@@ -136,7 +136,7 @@ export default function LevelNode({ def, state, subject, onPlay }: LevelNodeProp
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     className="text-xs font-bold px-2.5 py-0.5 rounded-full"
-                    style={{ background: `${accentColor}20`, color: accentLight }}
+                    style={{ background: `${accentColor}20`, color: accentColor, border: '1px solid rgba(164,117,81,0.2)' }}
                 >
                     MAIN!
                 </motion.span>

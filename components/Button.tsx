@@ -1,22 +1,19 @@
 import Link from "next/link";
+import type { ReactNode } from "react";
 
-export default function Button({ href, children }: any) {
+interface ButtonProps {
+  href: string;
+  children: ReactNode;
+  variant?: 'primary' | 'soft';
+}
+
+export default function Button({ href, children, variant = 'primary' }: ButtonProps) {
+  const variantClass = variant === 'soft' ? 'jawa-button-soft' : 'jawa-button-primary';
+
   return (
     <Link
       href={href}
-      className="
-        block
-        text-center
-        bg-sky-500
-        hover:bg-sky-400
-        text-white
-        px-4 py-3
-        rounded-2xl
-        font-semibold
-        shadow-sm
-        active:scale-95
-        transition
-      "
+      className={`jawa-button ${variantClass} block text-center active:scale-[0.98] transition`}
     >
       {children}
     </Link>

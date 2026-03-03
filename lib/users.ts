@@ -18,7 +18,7 @@ const DEFAULT_BADGES: Badge[] = [
 ];
 
 const DEFAULT_SHOP_ITEMS: ShopItem[] = [
-    { id: 'heart_refill', name: 'Isi Nyawa', description: 'Isi ulang 5 nyawa instan', emoji: '❤️', price: 15, owned: 0, maxStack: 5 },
+    { id: 'heart_refill', name: 'Isi Nyawa', description: 'Isi ulang 3 nyawa instan', emoji: '❤️', price: 15, owned: 0, maxStack: 5 },
     { id: 'streak_freeze', name: 'Streak Freeze', description: 'Pertahankan streak 1 hari walau tidak main', emoji: '❄️', price: 20, owned: 0, maxStack: 3 },
     { id: 'double_xp', name: 'Double XP', description: '2x XP untuk sesi berikutnya', emoji: '⭐', price: 50, owned: 0, maxStack: 3 },
     { id: 'dark_theme', name: 'Tema Gelap', description: 'Unlock tema warna gelap eksklusif', emoji: '🌙', price: 100, owned: 0, maxStack: 1 },

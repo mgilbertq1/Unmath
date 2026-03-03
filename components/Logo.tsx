@@ -22,16 +22,16 @@ export default function Logo({ size = 32, showText = true, className = '' }: Log
             >
                 <defs>
                     <linearGradient id={`${id}-a`} x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
-                        <stop offset="0%" stopColor="#818cf8" />
-                        <stop offset="100%" stopColor="#6366f1" />
+                        <stop offset="0%" stopColor="#D8A47F" />
+                        <stop offset="100%" stopColor="#A47551" />
                     </linearGradient>
                     <linearGradient id={`${id}-b`} x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
-                        <stop offset="0%" stopColor="#a78bfa" />
-                        <stop offset="100%" stopColor="#818cf8" />
+                        <stop offset="0%" stopColor="#C6A75E" />
+                        <stop offset="100%" stopColor="#A47551" />
                     </linearGradient>
                     <linearGradient id={`${id}-c`} x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
-                        <stop offset="0%" stopColor="#c4b5fd" />
-                        <stop offset="100%" stopColor="#a78bfa" />
+                        <stop offset="0%" stopColor="#7A9E7E" />
+                        <stop offset="100%" stopColor="#6D8299" />
                     </linearGradient>
                 </defs>
 
@@ -56,10 +56,10 @@ export default function Logo({ size = 32, showText = true, className = '' }: Log
 
             {showText && (
                 <span
-                    className="font-extrabold tracking-tight leading-none"
+                    className="font-heading font-bold tracking-tight leading-none"
                     style={{
                         fontSize: size * 0.72,
-                        background: 'linear-gradient(135deg, #c4b5fd 0%, #818cf8 50%, #6366f1 100%)',
+                        background: 'linear-gradient(135deg, #6D8299 0%, #A47551 56%, #C6A75E 100%)',
                         WebkitBackgroundClip: 'text',
                         WebkitTextFillColor: 'transparent',
                         backgroundClip: 'text',

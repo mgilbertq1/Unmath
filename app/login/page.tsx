@@ -2,7 +2,6 @@
 
 import { motion } from 'framer-motion';
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Logo from '@/components/Logo';
 import { useUserStore } from '@/lib/store/user-store';
@@ -10,7 +9,6 @@ import { useUserStore } from '@/lib/store/user-store';
 import { IconArrowLeft, IconEye, IconEyeOff } from '@/components/Icons';
 
 export default function LoginPage() {
-    const router = useRouter();
     const [form, setForm] = useState({ username: '', password: '' });
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
@@ -46,15 +44,16 @@ export default function LoginPage() {
 
     return (
         <div
-            className="min-h-screen flex flex-col items-center justify-center px-6"
-            style={{ background: 'var(--bg-primary)' }}
+            className="min-h-screen flex flex-col items-center justify-center px-6 relative overflow-hidden"
         >
+            <div className="absolute inset-0 pointer-events-none opacity-65" style={{ backgroundImage: 'var(--batik-pattern)', backgroundSize: '24px 24px' }} />
+
             {/* Back to welcome */}
-            <Link href="/welcome" className="absolute top-6 left-6 text-white/30 hover:text-white/70 transition-colors">
+            <Link href="/welcome" className="absolute top-6 left-6 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors z-10">
                 <IconArrowLeft size={24} />
             </Link>
 
-            <div className="w-full max-w-sm">
+            <div className="w-full max-w-sm relative z-10">
                 {/* Logo */}
                 <motion.div
                     initial={{ opacity: 0, y: -16 }}
@@ -70,13 +69,13 @@ export default function LoginPage() {
                     transition={{ delay: 0.1 }}
                     className="glass-card-strong p-6"
                 >
-                    <h1 className="text-xl font-extrabold text-white mb-1">Masuk</h1>
-                    <p className="text-white/30 text-sm mb-6">Selamat datang kembali!</p>
+                    <h1 className="text-4xl font-heading leading-none text-[var(--text-primary)] mb-1">Masuk</h1>
+                    <p className="text-[var(--text-secondary)] text-sm mb-6">Selamat datang kembali!</p>
 
                     <form onSubmit={handleSubmit} className="space-y-4">
                         {/* Username */}
                         <div>
-                            <label className="text-xs font-bold text-white/40 uppercase tracking-wider block mb-1.5">
+                            <label className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider block mb-1.5">
                                 Username
                             </label>
                             <input
@@ -85,17 +84,17 @@ export default function LoginPage() {
                                 onChange={(e) => setForm({ ...form, username: e.target.value })}
                                 placeholder="Username kamu"
                                 autoComplete="username"
-                                className="w-full py-3 px-4 rounded-xl text-white text-sm outline-none transition-all duration-200"
+                                className="w-full py-3 px-4 rounded-xl text-[var(--text-primary)] text-sm outline-none transition-all duration-200"
                                 style={{
-                                    background: 'rgba(255,255,255,0.06)',
-                                    border: '1.5px solid rgba(255,255,255,0.1)',
+                                    background: 'var(--bg-surface-soft)',
+                                    border: '1.5px solid var(--border-subtle)',
                                 }}
                                 onFocus={(e) => {
-                                    e.target.style.border = '1.5px solid rgba(99,102,241,0.5)';
-                                    e.target.style.boxShadow = '0 0 0 3px rgba(99,102,241,0.1)';
+                                    e.target.style.border = '1.5px solid var(--border-strong)';
+                                    e.target.style.boxShadow = '0 0 0 3px rgba(164,117,81,0.14)';
                                 }}
                                 onBlur={(e) => {
-                                    e.target.style.border = '1.5px solid rgba(255,255,255,0.1)';
+                                    e.target.style.border = '1.5px solid var(--border-subtle)';
                                     e.target.style.boxShadow = 'none';
                                 }}
                                 required
@@ -104,7 +103,7 @@ export default function LoginPage() {
 
                         {/* Password */}
                         <div>
-                            <label className="text-xs font-bold text-white/40 uppercase tracking-wider block mb-1.5">
+                            <label className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider block mb-1.5">
                                 Password
                             </label>
                             <div className="relative">
@@ -114,17 +113,17 @@ export default function LoginPage() {
                                     onChange={(e) => setForm({ ...form, password: e.target.value })}
                                     placeholder="••••••••"
                                     autoComplete="current-password"
-                                    className="w-full py-3 px-4 pr-12 rounded-xl text-white text-sm outline-none transition-all duration-200"
+                                    className="w-full py-3 px-4 pr-12 rounded-xl text-[var(--text-primary)] text-sm outline-none transition-all duration-200"
                                     style={{
-                                        background: 'rgba(255,255,255,0.06)',
-                                        border: '1.5px solid rgba(255,255,255,0.1)',
+                                        background: 'var(--bg-surface-soft)',
+                                        border: '1.5px solid var(--border-subtle)',
                                     }}
                                     onFocus={(e) => {
-                                        e.target.style.border = '1.5px solid rgba(99,102,241,0.5)';
-                                        e.target.style.boxShadow = '0 0 0 3px rgba(99,102,241,0.1)';
+                                        e.target.style.border = '1.5px solid var(--border-strong)';
+                                        e.target.style.boxShadow = '0 0 0 3px rgba(164,117,81,0.14)';
                                     }}
                                     onBlur={(e) => {
-                                        e.target.style.border = '1.5px solid rgba(255,255,255,0.1)';
+                                        e.target.style.border = '1.5px solid var(--border-subtle)';
                                         e.target.style.boxShadow = 'none';
                                     }}
                                     required
@@ -132,7 +131,7 @@ export default function LoginPage() {
                                 <button
                                     type="button"
                                     onClick={() => setShowPass(!showPass)}
-                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60 transition-colors"
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
                                 >
                                     {showPass ? <IconEyeOff size={20} /> : <IconEye size={20} />}
                                 </button>
@@ -145,7 +144,7 @@ export default function LoginPage() {
                                 initial={{ opacity: 0, y: -4 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 className="text-sm font-semibold rounded-xl px-4 py-2.5"
-                                style={{ background: 'rgba(239,68,68,0.12)', color: '#fca5a5' }}
+                                style={{ background: 'rgba(164,117,81,0.14)', color: 'var(--jawa-batik)' }}
                             >
                                 {error}
                             </motion.p>
@@ -158,8 +157,8 @@ export default function LoginPage() {
                             whileTap={{ scale: 0.97 }}
                             className="w-full py-3.5 rounded-xl font-extrabold text-white text-sm tracking-wide transition-all mt-2"
                             style={{
-                                background: loading ? 'rgba(99,102,241,0.4)' : 'linear-gradient(135deg, #6366f1, #818cf8)',
-                                boxShadow: loading ? 'none' : '0 4px 24px rgba(99,102,241,0.35)',
+                                background: loading ? 'rgba(164,117,81,0.35)' : 'linear-gradient(135deg, var(--jawa-batik), var(--jawa-terracotta))',
+                                boxShadow: loading ? 'none' : '0 10px 24px rgba(164,117,81,0.28)',
                                 cursor: loading ? 'not-allowed' : 'pointer',
                             }}
                         >
@@ -173,10 +172,10 @@ export default function LoginPage() {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.3 }}
-                    className="text-center text-white/30 text-sm mt-5"
+                    className="text-center text-[var(--text-secondary)] text-sm mt-5"
                 >
                     Belum punya akun?{' '}
-                    <Link href="/register" className="text-indigo-400 font-bold hover:text-indigo-300 transition-colors">
+                    <Link href="/register" className="text-[var(--jawa-batik)] font-bold hover:text-[var(--jawa-terracotta)] transition-colors">
                         Daftar sekarang
                     </Link>
                 </motion.p>

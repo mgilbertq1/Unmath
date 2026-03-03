@@ -32,7 +32,7 @@ export default function TypeAnswer({
     const isCorrect = checked && givenAnswer.toLowerCase().trim() === correctAnswer.toLowerCase().trim();
     const isWrong = checked && !isCorrect;
 
-    const accentColor = subject === 'math' ? '#6366f1' : '#10b981';
+    const accentColor = subject === 'math' ? '#A47551' : '#6D8299';
 
     const handleSubmit = () => {
         if (value.trim().length > 0) {
@@ -41,22 +41,22 @@ export default function TypeAnswer({
     };
 
     let inputStyle: React.CSSProperties = {
-        background: 'rgba(255,255,255,0.05)',
-        border: '2px solid rgba(255,255,255,0.1)',
-        color: '#f1f5f9',
+        background: 'var(--bg-surface-soft)',
+        border: '2px solid var(--border-subtle)',
+        color: 'var(--text-primary)',
     };
 
     if (isCorrect) {
         inputStyle = {
-            background: 'rgba(16,185,129,0.1)',
-            border: '2px solid rgba(16,185,129,0.4)',
-            color: '#34d399',
+            background: 'rgba(122,158,126,0.12)',
+            border: '2px solid rgba(122,158,126,0.4)',
+            color: '#7A9E7E',
         };
     } else if (isWrong) {
         inputStyle = {
-            background: 'rgba(239,68,68,0.1)',
-            border: '2px solid rgba(239,68,68,0.4)',
-            color: '#fca5a5',
+            background: 'rgba(164,117,81,0.12)',
+            border: '2px solid rgba(164,117,81,0.4)',
+            color: '#A47551',
         };
     }
 
@@ -77,7 +77,7 @@ export default function TypeAnswer({
                     onKeyDown={(e) => {
                         if (e.key === 'Enter') handleSubmit();
                     }}
-                    className="w-full rounded-2xl py-4 px-5 text-lg font-semibold transition-all duration-300 focus:outline-none disabled:cursor-not-allowed placeholder:text-white/20"
+                    className="w-full rounded-2xl py-4 px-5 text-lg font-semibold transition-all duration-300 focus:outline-none disabled:cursor-not-allowed placeholder:text-[var(--text-muted)]"
                     style={{
                         ...inputStyle,
                         backdropFilter: 'blur(12px)',
@@ -119,8 +119,8 @@ export default function TypeAnswer({
                     className="w-full py-3.5 rounded-2xl font-bold text-white transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed"
                     style={{
                         background: value.trim().length > 0
-                            ? `linear-gradient(135deg, ${accentColor}, ${subject === 'math' ? '#818cf8' : '#34d399'})`
-                            : 'rgba(255,255,255,0.08)',
+                                ? `linear-gradient(135deg, ${accentColor}, ${subject === 'math' ? '#D8A47F' : '#7A9E7E'})`
+                                : 'rgba(164,117,81,0.18)',
                         boxShadow: value.trim().length > 0 ? `0 4px 24px ${accentColor}33` : 'none',
                     }}
                 >

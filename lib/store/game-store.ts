@@ -2,7 +2,7 @@
 
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { Question, AnswerRecord, Subject, LevelState, LevelProgress } from '../types';
+import { Question, AnswerRecord, Subject, LevelState, LevelProgress, LeaderboardEntry } from '../types';
 import { TOTAL_LEVELS } from '../levels/level-definitions';
 
 /* ─── helpers ─────────────────────────────────────────────────── */
@@ -38,13 +38,21 @@ function shuffleWithTypeVariety(questions: Question[]): Question[] {
     return shuffled;
 }
 
+/** Task 2: Updated star thresholds — 85/70/60 */
 function calcStars(correct: number, total: number): number {
     if (total === 0) return 0;
     const pct = correct / total;
-    if (pct >= 0.9) return 3;
-    if (pct >= 0.6) return 2;
-    if (pct >= 0.5) return 1;   // min 1 star = 50% correct (≥ 3/5 for 5-question levels)
-    return 0;
+    if (pct >= 0.85) return 3;
+    if (pct >= 0.70) return 2;
+    if (pct >= 0.60) return 1;
+    return 0;   // < 60% → wajib ulang
+}
+
+/** Helper: compute gems earned from stars + perfect run bonus (Task 8) */
+export function calcGems(stars: number, isPerfect: boolean): number {
+    const base = stars >= 3 ? 20 : stars >= 2 ? 12 : stars >= 1 ? 5 : 0;
+    const bonus = isPerfect ? 10 : 0;
+    return base + bonus;
 }
 
 /* ─── types ────────────────────────────────────────────────────── */
@@ -52,6 +60,9 @@ function calcStars(correct: number, total: number): number {
 interface GameStore {
     // ── Persistent: level progress ──────────────────────────────
     levels: LevelProgress;
+
+    // ── Persistent: leaderboard per level ───────────────────────
+    leaderboard: Record<string, LeaderboardEntry[]>;
 
     // ── Session: in-game state ───────────────────────────────────
     subject: Subject | null;
@@ -66,10 +77,12 @@ interface GameStore {
     bestStreak: number;
     isGameOver: boolean;
     isGameComplete: boolean;
+    sessionStartTime: number;
 
     // ── Actions ──────────────────────────────────────────────────
-    startGame: (subject: Subject, levelId: number, questions: Question[]) => void;
-    answerQuestion: (given: string | string[]) => boolean;
+    startGame: (subject: Subject, levelId: number, questions: Question[], initialLives: number) => void;
+    answerQuestion: (given: string | string[], quickAnswer?: boolean) => boolean;
+    addLeaderboardEntry: (subject: Subject, levelId: number, entry: LeaderboardEntry) => void;
     nextQuestion: () => void;
     skipQuestion: () => void;
     resetGame: () => void;
@@ -94,6 +107,7 @@ const initialSession = {
     bestStreak: 0,
     isGameOver: false,
     isGameComplete: false,
+    sessionStartTime: 0,
 };
 
 /* ─── store ────────────────────────────────────────────────────── */
@@ -107,10 +121,12 @@ export const useGameStore = create<GameStore>()(
                 pkn: makeLevelStates(),
             },
 
+            leaderboard: {},
+
             // Session (also persisted so page refresh mid-game works)
             ...initialSession,
 
-            startGame: (subject, levelId, questions) => {
+            startGame: (subject, levelId, questions, initialLives) => {
                 const shuffled = shuffleWithTypeVariety(questions);
                 set({
                     subject,
@@ -119,16 +135,17 @@ export const useGameStore = create<GameStore>()(
                     currentIndex: 0,
                     answers: [],
                     xp: 0,
-                    lives: 5,
+                    lives: initialLives,
                     maxLives: 5,
                     streak: 0,
                     bestStreak: 0,
                     isGameOver: false,
                     isGameComplete: false,
+                    sessionStartTime: Date.now(),
                 });
             },
 
-            answerQuestion: (given) => {
+            answerQuestion: (given, quickAnswer = false) => {
                 const { questions, currentIndex, streak, bestStreak, xp, lives } = get();
                 const question = questions[currentIndex];
                 if (!question) return false;
@@ -149,7 +166,9 @@ export const useGameStore = create<GameStore>()(
 
                 const newStreak = isCorrect ? streak + 1 : 0;
                 const streakMultiplier = isCorrect ? 1 + Math.floor(streak / 3) * 0.5 : 0;
-                const earnedXP = isCorrect ? Math.round(question.points * streakMultiplier) : 0;
+                // Task 5: +50% XP if answered within first 10 seconds
+                const quickMultiplier = (isCorrect && quickAnswer) ? 1.5 : 1;
+                const earnedXP = isCorrect ? Math.round(question.points * streakMultiplier * quickMultiplier) : 0;
                 const newLives = isCorrect ? lives : lives - 1;
 
                 const record: AnswerRecord = {
@@ -218,7 +237,7 @@ export const useGameStore = create<GameStore>()(
                     if (completed.status !== 'completed') completed.status = 'completed';
                 }
 
-                // Unlock next level if stars >= 1
+                // Task 2: Unlock next level ONLY if stars >= 1 (≥ 60% correct)
                 if (stars >= 1) {
                     const next = subjectLevels.find((l) => l.id === completedLevelId + 1);
                     if (next && next.status === 'locked') {
@@ -227,6 +246,15 @@ export const useGameStore = create<GameStore>()(
                 }
 
                 set({ levels: levelsCopy });
+            },
+
+            addLeaderboardEntry: (subject, levelId, entry) => {
+                const key = `${subject}-${levelId}`;
+                const current = get().leaderboard[key] ?? [];
+                const updated = [...current, entry]
+                    .sort((a, b) => b.score - a.score)
+                    .slice(0, 10);
+                set({ leaderboard: { ...get().leaderboard, [key]: updated } });
             },
 
             resetGame: () => {
@@ -239,6 +267,7 @@ export const useGameStore = create<GameStore>()(
                         math: makeLevelStates(),
                         pkn: makeLevelStates(),
                     },
+                    leaderboard: {},
                     ...initialSession,
                 });
             },
@@ -249,6 +278,7 @@ export const useGameStore = create<GameStore>()(
             // (questions array is large and recreatable, skip it)
             partialize: (state) => ({
                 levels: state.levels,
+                leaderboard: state.leaderboard,
                 subject: state.subject,
                 currentLevelId: state.currentLevelId,
                 xp: state.xp,
@@ -259,6 +289,7 @@ export const useGameStore = create<GameStore>()(
                 answers: state.answers,
                 isGameOver: state.isGameOver,
                 isGameComplete: state.isGameComplete,
+                sessionStartTime: state.sessionStartTime,
             }),
         }
     )

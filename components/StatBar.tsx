@@ -1,8 +1,15 @@
-export default function StatBar({ label, value }: any) {
+import type { ReactNode } from 'react';
+
+interface StatBarProps {
+  label: ReactNode;
+  value: ReactNode;
+}
+
+export default function StatBar({ label, value }: StatBarProps) {
   return (
     <div className="flex justify-between text-sm">
-      <span className="text-slate-500">{label}</span>
-      <span className="text-slate-800 font-semibold">{value}</span>
+      <span className="text-[var(--text-secondary)]">{label}</span>
+      <span className="text-[var(--text-primary)] font-semibold">{value}</span>
     </div>
   );
 }

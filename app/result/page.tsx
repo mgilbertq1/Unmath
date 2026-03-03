@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams, useRouter } from "next/navigation";
-import { Suspense, useState, useEffect } from "react";
+import { Suspense, useState } from "react";
 import Modal from "@/components/Modal";
 
 function ResultContent() {
@@ -28,16 +28,19 @@ function ResultContent() {
     }>
   >([]);
 
-  useEffect(() => {
-    if (showReview) {
-      const raw = sessionStorage.getItem("gameAnswers");
-      if (raw) {
-        try {
-          setAnswers(JSON.parse(raw));
-        } catch { }
+  const handleOpenReview = () => {
+    const raw = sessionStorage.getItem("gameAnswers");
+    if (raw) {
+      try {
+        setAnswers(JSON.parse(raw));
+      } catch {
+        setAnswers([]);
       }
+    } else {
+      setAnswers([]);
     }
-  }, [showReview]);
+    setShowReview(true);
+  };
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-sky-100 to-white flex flex-col items-center py-12">
@@ -111,7 +114,7 @@ function ResultContent() {
               Beranda
             </button>
             <button
-              onClick={() => setShowReview(true)}
+              onClick={handleOpenReview}
               className="w-full bg-indigo-500 text-white py-3 rounded-3xl font-semibold shadow-md hover:bg-indigo-600 transition"
             >
               Lihat Pembahasan

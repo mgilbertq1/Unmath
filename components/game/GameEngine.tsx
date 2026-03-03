@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
-import { useGameStore, computeStars } from '@/lib/store/game-store';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { motion } from 'framer-motion';
+import { useGameStore, computeStars, calcGems } from '@/lib/store/game-store';
 import { useUserStore } from '@/lib/store/user-store';
 import { Question, Subject } from '@/lib/types';
 import { TOTAL_LEVELS } from '@/lib/levels/level-definitions';
@@ -35,45 +35,123 @@ export default function GameEngine({ subject, levelId, questions }: GameEnginePr
     const [unlockTriggered, setUnlockTriggered] = useState(false);
     const [showCelebration, setShowCelebration] = useState(false);
 
-    useEffect(() => {
-        store.startGame(subject, levelId, questions);
-        setUnlockTriggered(false);
-        userStore.checkDailyLogin();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    // Task 5: per-question timer
+    const [timeLeft, setTimeLeft] = useState(30);
+    const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+    const answerStartTimeRef = useRef<number>(Date.now());
 
     const currentQuestion = store.questions[store.currentIndex];
+    const maxTime = currentQuestion?.difficulty === 'hard' ? 45 : 30;
+
+    // Start/reset timer when question changes
+    useEffect(() => {
+        if (!currentQuestion || store.isGameComplete || store.isGameOver) return;
+        const t = maxTime;
+        setTimeLeft(t);
+        answerStartTimeRef.current = Date.now();
+        if (timerRef.current) clearInterval(timerRef.current);
+        timerRef.current = setInterval(() => {
+            setTimeLeft((prev) => {
+                if (prev <= 1) {
+                    if (timerRef.current) clearInterval(timerRef.current);
+                    // Time's up: count as wrong, consume life
+                    store.answerQuestion('', false);
+                    userStore.consumeLife();
+                    setLastCorrect(false);
+                    setChecked(true);
+                    setGivenAnswer('');
+                    setEarnedPoints(0);
+                    return 0;
+                }
+                return prev - 1;
+            });
+        }, 1000);
+        return () => { if (timerRef.current) clearInterval(timerRef.current); };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [store.currentIndex, store.isGameComplete, store.isGameOver]);
+
+    useEffect(() => {
+        // Task 4: start game with daily lives
+        store.startGame(subject, levelId, questions, userStore.dailyLives);
+        setUnlockTriggered(false);
+        userStore.checkDailyLogin();
+        userStore.regenLives();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     useEffect(() => {
         if ((store.isGameComplete || store.isGameOver) && !unlockTriggered) {
             setUnlockTriggered(true);
+            if (timerRef.current) clearInterval(timerRef.current);
             const stars = computeStars(store.answers);
             store.unlockNextLevel(subject, levelId, stars);
 
+            const correctCount = store.answers.filter((a) => a.isCorrect).length;
+            const isPerfect = correctCount === store.answers.length && store.answers.length > 0;
+            const gemsEarned = calcGems(stars, isPerfect);
+
             userStore.addXP(store.xp);
-            const gemsEarned = stars >= 3 ? 15 : stars >= 2 ? 10 : stars >= 1 ? 5 : 0;
             if (gemsEarned > 0) userStore.addGems(gemsEarned);
 
-            if (stars >= 1) userStore.earnBadge('first_win');
-            if (stars === 3) userStore.earnBadge('perfect_level');
-            if (store.bestStreak >= 5) userStore.earnBadge('speed_demon');
-            if (stars >= 1 && !store.isGameOver) setShowCelebration(true);
+            // Task 6: check and award badges
+            const levelProgress = store.levels;
+            userStore.checkAndAwardBadges({
+                subject,
+                levelId,
+                stars,
+                correctCount,
+                totalQuestions: store.answers.length,
+                livesLeft: store.lives,
+                bestStreak: store.bestStreak,
+                sessionTimeSeconds: Math.round((Date.now() - store.sessionStartTime) / 1000),
+                allLevelsMath: levelProgress.math,
+                allLevelsPkn: levelProgress.pkn,
+            });
 
-            // Simpan ke server
+            // Task 7: update daily challenge
+            if (stars >= 1 && store.lives === store.maxLives) userStore.updateDailyChallenge('level_no_loss');
+            if (store.bestStreak >= 5) userStore.updateDailyChallenge('streak_5');
+            const sessionSec = Math.round((Date.now() - store.sessionStartTime) / 1000);
+            if (stars >= 1 && sessionSec <= 180) userStore.updateDailyChallenge('level_fast');
+
+            // Task 9: add leaderboard entry
+            store.addLeaderboardEntry(subject, levelId, {
+                username: userStore.username,
+                score: store.xp,
+                stars,
+                date: new Date().toLocaleDateString('id-ID'),
+                timeSeconds: sessionSec,
+            });
+
+            if (stars >= 1 && !store.isGameOver) setShowCelebration(true);
             syncGameData();
         }
     }, [store.isGameComplete, store.isGameOver, unlockTriggered, subject, levelId, store, userStore]);
 
     const handleAnswer = useCallback(
         (given: string | string[]) => {
+            if (timerRef.current) clearInterval(timerRef.current);
+            const elapsed = (Date.now() - answerStartTimeRef.current) / 1000;
+            const quickAnswer = elapsed <= 10;
             const xpBefore = store.xp;
-            const isCorrect = store.answerQuestion(given);
+            const isCorrect = store.answerQuestion(given, quickAnswer);
             setLastCorrect(isCorrect);
             setChecked(true);
             setGivenAnswer(Array.isArray(given) ? given.join(', ') : given);
             setEarnedPoints(store.xp - xpBefore);
+            // Task 4: consume daily life on wrong answer
+            if (!isCorrect) userStore.consumeLife();
+            // Task 6: track consecutive quick answers for speed_demon badge
+            if (isCorrect && quickAnswer) {
+                const newCount = userStore.consecutiveQuickAnswers + 1;
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                (userStore as any).set?.({ consecutiveQuickAnswers: newCount });
+            }
+            // Task 7: correct_answer challenge
+            if (isCorrect) userStore.updateDailyChallenge('correct_answer');
         },
-        [store]
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [store, userStore]
     );
 
     const handleMCSelect = useCallback((opt: string) => {
@@ -95,10 +173,11 @@ export default function GameEngine({ subject, levelId, questions }: GameEnginePr
         setSelectedAnswer(null);
         setGivenAnswer('');
         setEarnedPoints(0);
-    }, [store]);
+        userStore.clearQuestionPowerUps();
+    }, [store, userStore]);
 
     const handleRestart = useCallback(() => {
-        store.startGame(subject, levelId, questions);
+        store.startGame(subject, levelId, questions, userStore.dailyLives);
         setChecked(false);
         setLastCorrect(false);
         setSelectedAnswer(null);
@@ -106,10 +185,12 @@ export default function GameEngine({ subject, levelId, questions }: GameEnginePr
         setEarnedPoints(0);
         setUnlockTriggered(false);
         setShowCelebration(false);
-    }, [store, subject, levelId, questions]);
+        userStore.clearQuestionPowerUps();
+    }, [store, subject, levelId, questions, userStore]);
 
     const stars = computeStars(store.answers);
-    const gemsEarned = stars >= 3 ? 15 : stars >= 2 ? 10 : stars >= 1 ? 5 : 0;
+    const isPerfect = store.answers.length > 0 && store.answers.every((a) => a.isCorrect);
+    const gemsEarned = calcGems(stars, isPerfect);
 
     if (showCelebration && (store.isGameComplete || store.isGameOver)) {
         return (
@@ -163,9 +244,9 @@ export default function GameEngine({ subject, levelId, questions }: GameEnginePr
     if (!currentQuestion) return null;
 
     const diffBadge = {
-        easy: { label: 'Mudah', bg: 'rgba(16,185,129,0.15)', color: '#34d399', border: 'rgba(16,185,129,0.25)' },
-        medium: { label: 'Sedang', bg: 'rgba(245,158,11,0.15)', color: '#fbbf24', border: 'rgba(245,158,11,0.25)' },
-        hard: { label: 'Sulit', bg: 'rgba(239,68,68,0.15)', color: '#fca5a5', border: 'rgba(239,68,68,0.25)' },
+        easy: { label: 'Mudah', bg: 'rgba(122,158,126,0.16)', color: '#7A9E7E', border: 'rgba(122,158,126,0.3)' },
+        medium: { label: 'Sedang', bg: 'rgba(198,167,94,0.16)', color: '#C6A75E', border: 'rgba(198,167,94,0.3)' },
+        hard: { label: 'Sulit', bg: 'rgba(164,117,81,0.15)', color: '#A47551', border: 'rgba(164,117,81,0.3)' },
     }[currentQuestion.difficulty];
 
     const typeLabel: Record<string, string> = {
@@ -175,8 +256,8 @@ export default function GameEngine({ subject, levelId, questions }: GameEnginePr
         'type-answer': 'Ketik Jawaban',
     };
 
-    const accentColor = subject === 'math' ? '#6366f1' : '#10b981';
-    const accentLight = subject === 'math' ? '#818cf8' : '#34d399';
+    const accentColor = subject === 'math' ? '#A47551' : '#6D8299';
+    const accentLight = subject === 'math' ? '#D8A47F' : '#7A9E7E';
 
     const renderQuestionType = () => {
         switch (currentQuestion.type) {
@@ -192,18 +273,6 @@ export default function GameEngine({ subject, levelId, questions }: GameEnginePr
                             checked={checked}
                             subject={subject}
                         />
-                        {!checked && selectedAnswer && (
-                            <button
-                                onClick={handleMCSubmit}
-                                className="mt-4 w-full py-3.5 rounded-2xl font-bold text-white text-base active:scale-95 transition-all duration-200"
-                                style={{
-                                    background: `linear-gradient(135deg, ${accentColor}, ${accentLight})`,
-                                    boxShadow: `0 4px 24px ${accentColor}33`,
-                                }}
-                            >
-                                PERIKSA
-                            </button>
-                        )}
                     </>
                 );
             case 'true-false':
@@ -245,15 +314,7 @@ export default function GameEngine({ subject, levelId, questions }: GameEnginePr
     };
 
     return (
-        <div className="max-w-2xl mx-auto w-full">
-            {/* Back to map */}
-            <button
-                onClick={() => window.history.back()}
-                className="text-white/30 hover:text-white/60 text-sm font-bold mb-4 flex items-center gap-1.5 transition-colors"
-            >
-                ← Peta Level
-            </button>
-
+        <div className="w-full flex flex-col gap-3">
             <GameHeader
                 currentIndex={store.currentIndex}
                 totalQuestions={store.questions.length}
@@ -262,51 +323,95 @@ export default function GameEngine({ subject, levelId, questions }: GameEnginePr
                 maxLives={store.maxLives}
                 streak={store.streak}
                 subject={subject}
+                timeLeft={timeLeft}
+                maxTime={maxTime}
             />
 
-            <div className="mt-5">
-                <QuestionCard questionKey={currentQuestion.id} subject={subject}>
-                    <div className="flex items-center gap-2 mb-4 flex-wrap">
-                        <span className="text-xs font-bold px-2.5 py-1 rounded-full"
-                            style={{ background: diffBadge.bg, color: diffBadge.color, border: `1px solid ${diffBadge.border}` }}
-                        >
-                            {diffBadge.label}
-                        </span>
-                        <span className="text-xs font-medium px-2.5 py-1 rounded-full"
-                            style={{ background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.4)' }}
-                        >
-                            {typeLabel[currentQuestion.type]}
-                        </span>
-                        <span className="text-xs font-bold text-white/30 ml-auto">
-                            +{currentQuestion.points} XP
-                        </span>
-                    </div>
+            <QuestionCard questionKey={currentQuestion.id} subject={subject}>
+                {/* Tags */}
+                <div className="flex items-center gap-2 mb-4 flex-wrap">
+                    <span className="text-xs font-bold px-2.5 py-1 rounded-full"
+                        style={{ background: diffBadge.bg, color: diffBadge.color, border: `1px solid ${diffBadge.border}` }}
+                    >
+                        {diffBadge.label}
+                    </span>
+                    <span className="text-xs font-medium px-2.5 py-1 rounded-full"
+                        style={{ background: 'rgba(109,130,153,0.14)', color: '#8FAAC0', border: '1px solid rgba(109,130,153,0.28)' }}
+                    >
+                        {typeLabel[currentQuestion.type]}
+                    </span>
+                    <span className="text-xs font-bold ml-auto"
+                        style={{ padding: '4px 10px', borderRadius: 999, background: 'rgba(122,158,126,0.12)', color: '#7A9E7E', border: '1px solid rgba(122,158,126,0.25)' }}
+                    >
+                        +{currentQuestion.points} XP
+                    </span>
+                </div>
 
-                    <h2 className="text-lg sm:text-xl font-bold text-white mb-5 leading-snug">
-                        {currentQuestion.question}
-                    </h2>
+                {/* Question text */}
+                <h2 className="font-bold mb-5 leading-snug" style={{ fontSize: 'clamp(16px,4vw,20px)', color: '#F0E8D8' }}>
+                    {currentQuestion.question}
+                </h2>
 
-                    {renderQuestionType()}
+                {renderQuestionType()}
 
-                    <FeedbackOverlay
-                        show={checked}
-                        isCorrect={lastCorrect}
-                        explanation={currentQuestion.explanation}
-                        points={earnedPoints}
-                        streak={store.streak}
-                        onContinue={handleContinue}
-                    />
-                </QuestionCard>
-            </div>
+                <FeedbackOverlay
+                    show={checked}
+                    isCorrect={lastCorrect}
+                    explanation={currentQuestion.explanation}
+                    points={earnedPoints}
+                    streak={store.streak}
+                    onContinue={handleContinue}
+                />
+            </QuestionCard>
 
+            {/* Bottom bar: skip + confirm */}
             {!checked && (
-                <div className="mt-4 text-center">
+                <div className="flex items-center gap-3">
                     <button
                         onClick={() => { store.skipQuestion(); setChecked(false); setSelectedAnswer(null); setGivenAnswer(''); }}
-                        className="text-sm text-white/20 hover:text-white/40 font-semibold transition-colors py-2 px-4"
+                        className="font-bold uppercase"
+                        style={{
+                            padding: '12px 18px', borderRadius: 13,
+                            background: 'transparent',
+                            border: '1px solid rgba(198,167,94,0.2)',
+                            color: 'rgba(198,167,94,0.5)',
+                            fontSize: 11, letterSpacing: '1px',
+                            cursor: 'pointer', transition: 'all 0.2s',
+                            whiteSpace: 'nowrap',
+                        }}
                     >
-                        LEWATI →
+                        Lewati →
                     </button>
+
+                    {/* PERIKSA — only for multiple-choice after selecting */}
+                    {currentQuestion.type === 'multiple-choice' && selectedAnswer && (
+                        <motion.button
+                            onClick={handleMCSubmit}
+                            initial={{ opacity: 0, scale: 0.92 }}
+                            animate={{
+                                opacity: 1, scale: 1,
+                                boxShadow: [
+                                    '0 6px 22px rgba(164,117,81,0.4)',
+                                    '0 6px 32px rgba(164,117,81,0.65)',
+                                    '0 6px 22px rgba(164,117,81,0.4)',
+                                ],
+                            }}
+                            transition={{ boxShadow: { duration: 2, repeat: Infinity, ease: 'easeInOut' } }}
+                            whileHover={{ y: -2, scale: 1.03 }}
+                            whileTap={{ scale: 0.96 }}
+                            className="flex-1 font-bold uppercase"
+                            style={{
+                                padding: '13px 0',
+                                borderRadius: 14,
+                                background: 'linear-gradient(135deg, #C6A75E, #A47551)',
+                                color: '#1A0903',
+                                fontSize: 13, letterSpacing: '1px',
+                                border: 'none', cursor: 'pointer',
+                            }}
+                        >
+                            Konfirmasi ⚔
+                        </motion.button>
+                    )}
                 </div>
             )}
         </div>

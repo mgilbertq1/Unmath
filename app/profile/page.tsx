@@ -7,7 +7,7 @@ import { useGameStore } from '@/lib/store/game-store';
 import { syncGameData } from '@/lib/sync';
 import * as Icons from '@/components/Icons';
 
-const avatarOptions = ['🧑‍🎓', '👩‍🎓', '🦊', '🐱', '🐶', '🦁', '🐼', '🐸', '🦄', '🐯', '🐨', '🐵'];
+import EmojiPicker from '@/components/EmojiPicker';
 
 export default function ProfilePage() {
     const { avatar, username, totalXP, gems, loginStreak, badges, setAvatar, setUsername } = useUserStore();
@@ -33,7 +33,7 @@ export default function ProfilePage() {
     const earnedBadges = badges.filter((b) => b.earned);
 
     return (
-        <div className="min-h-screen" style={{ background: 'var(--bg-primary)' }}>
+        <div className="page-content">
             <div className="max-w-lg mx-auto px-4 py-6">
                 {/* Profile card */}
                 <motion.div
@@ -43,7 +43,7 @@ export default function ProfilePage() {
                 >
                     {/* Gradient blob */}
                     <div className="absolute inset-0 pointer-events-none" style={{
-                        background: 'radial-gradient(circle at 50% 0%, rgba(99,102,241,0.15), transparent 60%)',
+                        background: 'radial-gradient(circle at 50% 0%, rgba(164,117,81,0.16), transparent 60%)',
                     }} />
 
                     <div className="relative z-10">
@@ -54,76 +54,72 @@ export default function ProfilePage() {
                             whileTap={{ scale: 0.9 }}
                             className="relative mx-auto mb-3 w-24 h-24 rounded-full flex items-center justify-center text-5xl"
                             style={{
-                                background: 'linear-gradient(135deg, rgba(99,102,241,0.15), rgba(168,85,247,0.15))',
-                                border: '3px solid rgba(99,102,241,0.3)',
-                                boxShadow: '0 8px 32px rgba(99,102,241,0.2)',
+                                background: 'linear-gradient(135deg, rgba(164,117,81,0.18), rgba(216,164,127,0.18))',
+                                border: '3px solid rgba(164,117,81,0.34)',
+                                boxShadow: '0 8px 24px rgba(164,117,81,0.2)',
                             }}
                         >
                             {avatar}
                             <span className="absolute bottom-0 right-0 w-7 h-7 rounded-full flex items-center justify-center text-xs"
-                                style={{ background: 'linear-gradient(135deg, #6366f1, #818cf8)' }}>
+                                style={{ background: 'linear-gradient(135deg, var(--jawa-batik), var(--jawa-terracotta))' }}>
                                 ✏️
                             </span>
                         </motion.button>
 
                         {/* Username */}
                         {editing ? (
-                            <div className="flex items-center gap-2 justify-center mb-2">
-                                <input
-                                    value={newName}
-                                    onChange={(e) => setNewName(e.target.value)}
-                                    className="bg-transparent border-b-2 border-indigo-500 text-white font-bold text-center text-lg outline-none py-1 px-2 max-w-[200px]"
-                                    autoFocus
-                                    onKeyDown={(e) => {
-                                        if (e.key === 'Enter') {
-                                            handleSaveUsername();
-                                        }
-                                    }}
-                                />
-                                <button
-                                    onClick={handleSaveUsername}
-                                    className="text-emerald-400 text-sm font-bold"
-                                >✓</button>
+                            <div className="flex flex-col items-center gap-2 mb-2">
+                                <div className="flex items-center gap-2">
+                                    <input
+                                        value={newName}
+                                        onChange={(e) => setNewName(e.target.value)}
+                                        className="bg-transparent border-b-2 border-[var(--jawa-batik)] text-[var(--text-primary)] font-bold text-center text-lg outline-none py-1 px-2 max-w-[180px]"
+                                        autoFocus
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter') handleSaveUsername();
+                                        }}
+                                    />
+                                    {/* Emoji picker for display name */}
+                                    <EmojiPicker
+                                        onEmojiSelect={(emoji) => setNewName((prev) => prev + emoji)}
+                                        triggerLabel="😊"
+                                        position="bottom"
+                                    />
+                                    <button
+                                        onClick={handleSaveUsername}
+                                        className="text-[var(--jawa-sage)] text-lg font-bold"
+                                    >✓</button>
+                                </div>
                             </div>
                         ) : (
                             <button
                                 onClick={() => setEditing(true)}
-                                className="text-xl font-extrabold text-white hover:text-indigo-300 transition-colors"
+                                className="text-4xl font-heading leading-none text-[var(--text-primary)] hover:text-[var(--jawa-batik)] transition-colors"
                             >
                                 {username} ✏️
                             </button>
                         )}
 
-                        <p className="text-sm text-white/30 mt-1">Pelajar aktif</p>
+                        <p className="text-sm text-[var(--text-secondary)] mt-1">Pelajar aktif</p>
                     </div>
                 </motion.div>
 
-                {/* Avatar picker */}
+                {/* Avatar picker — powered by emoji-mart */}
                 <AnimatePresence>
                     {showAvatarPicker && (
                         <motion.div
-                            initial={{ opacity: 0, height: 0 }}
-                            animate={{ opacity: 1, height: 'auto' }}
-                            exit={{ opacity: 0, height: 0 }}
-                            className="glass-card mb-4 p-4 overflow-hidden"
+                            initial={{ opacity: 0, y: -10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                            className="glass-card mb-4 p-4 overflow-hidden flex flex-col items-center gap-3"
                         >
-                            <p className="text-xs font-bold text-white/40 mb-3">Pilih Avatar</p>
-                            <div className="grid grid-cols-6 gap-2">
-                                {avatarOptions.map((av) => (
-                                    <motion.button
-                                        key={av}
-                                        whileTap={{ scale: 0.85 }}
-                                        onClick={() => handleSetAvatar(av)}
-                                        className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl transition-all"
-                                        style={{
-                                            background: av === avatar ? 'rgba(99,102,241,0.2)' : 'rgba(255,255,255,0.04)',
-                                            border: av === avatar ? '2px solid rgba(99,102,241,0.4)' : '2px solid transparent',
-                                        }}
-                                    >
-                                        {av}
-                                    </motion.button>
-                                ))}
-                            </div>
+                            <p className="text-xs font-bold text-[var(--text-secondary)] self-start">Pilih Avatar dari Emoji</p>
+                            <EmojiPicker
+                                onEmojiSelect={(emoji) => handleSetAvatar(emoji)}
+                                triggerLabel={avatar}
+                                position="bottom"
+                            />
+                            <p className="text-xs text-[var(--text-muted)]">Ketuk ikon di atas untuk membuka semua emoji</p>
                         </motion.div>
                     )}
                 </AnimatePresence>
@@ -131,29 +127,29 @@ export default function ProfilePage() {
                 {/* Stats grid */}
                 <div className="grid grid-cols-2 gap-3 mb-6">
                     {[
-                        { icon: Icons.IconStar, value: totalXP.toLocaleString(), label: 'Total XP', accent: '#6366f1' },
-                        { icon: Icons.IconGem, value: gems, label: 'Gems', accent: '#a855f7' },
-                        { icon: Icons.IconBook, value: totalLevels, label: 'Level Selesai', accent: '#10b981' },
-                        { icon: Icons.IconStar, value: totalStars, label: 'Bintang', accent: '#f59e0b' },
-                        { icon: Icons.IconFlame, value: loginStreak, label: 'Login Streak', accent: '#ef4444' },
-                        { icon: Icons.IconAward, value: earnedBadges.length, label: 'Badge', accent: '#ec4899' },
+                        { icon: Icons.IconStar, value: totalXP.toLocaleString(), label: 'Total XP', accent: '#A47551' },
+                        { icon: Icons.IconGem, value: gems, label: 'Gems', accent: '#C6A75E' },
+                        { icon: Icons.IconBook, value: totalLevels, label: 'Level Selesai', accent: '#7A9E7E' },
+                        { icon: Icons.IconStar, value: totalStars, label: 'Bintang', accent: '#C6A75E' },
+                        { icon: Icons.IconFlame, value: loginStreak, label: 'Login Streak', accent: '#D8A47F' },
+                        { icon: Icons.IconAward, value: earnedBadges.length, label: 'Badge', accent: '#6D8299' },
                     ].map((stat, i) => (
                         <motion.div
                             key={stat.label}
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: i * 0.05 }}
-                            className="glass-card p-4 text-center flex flex-col items-center justify-center group hover:border-indigo-500/30 transition-colors"
+                            className="glass-card p-4 text-center flex flex-col items-center justify-center group hover:border-[var(--border-strong)] transition-colors"
                         >
                             <stat.icon className="w-6 h-6 mb-2" style={{ color: stat.accent }} />
-                            <p className="text-xl font-extrabold text-white">{stat.value}</p>
-                            <p className="text-[10px] text-white/25 font-bold uppercase tracking-wider">{stat.label}</p>
+                            <p className="text-xl font-extrabold text-[var(--text-primary)]">{stat.value}</p>
+                            <p className="text-[10px] text-[var(--text-muted)] font-bold uppercase tracking-wider">{stat.label}</p>
                         </motion.div>
                     ))}
                 </div>
 
                 {/* Badges */}
-                <h3 className="text-lg font-extrabold text-white mb-3">🏆 Badge</h3>
+                <h3 className="text-3xl font-heading leading-none text-[var(--text-primary)] mb-3">🏆 Badge</h3>
                 <div className="grid grid-cols-3 gap-3">
                     {badges.map((badge, i) => (
                         <motion.div
@@ -164,11 +160,11 @@ export default function ProfilePage() {
                             className="glass-card p-3 text-center"
                             style={{
                                 opacity: badge.earned ? 1 : 0.3,
-                                boxShadow: badge.earned ? `0 4px 24px ${badge.earned ? 'rgba(245,158,11,0.15)' : 'none'}` : 'none',
+                                boxShadow: badge.earned ? `0 4px 24px ${badge.earned ? 'rgba(198,167,94,0.2)' : 'none'}` : 'none',
                             }}
                         >
                             <span className="text-2xl block mb-1">{badge.emoji}</span>
-                            <p className="text-xs font-bold text-white/70 leading-tight">{badge.name}</p>
+                            <p className="text-xs font-bold text-[var(--text-secondary)] leading-tight">{badge.name}</p>
                         </motion.div>
                     ))}
                 </div>

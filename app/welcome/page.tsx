@@ -1,7 +1,6 @@
 'use client';
 
-import { motion, AnimatePresence } from 'framer-motion';
-import { useState } from 'react';
+import { motion } from 'framer-motion';
 import Link from 'next/link';
 import Logo from '@/components/Logo';
 
@@ -18,16 +17,16 @@ function Mascot() {
             <svg viewBox="0 0 220 220" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
                 <defs>
                     <radialGradient id="glow-bg" cx="50%" cy="50%" r="50%">
-                        <stop offset="0%" stopColor="#6366f1" stopOpacity="0.25" />
-                        <stop offset="100%" stopColor="#6366f1" stopOpacity="0" />
+                        <stop offset="0%" stopColor="#A47551" stopOpacity="0.22" />
+                        <stop offset="100%" stopColor="#A47551" stopOpacity="0" />
                     </radialGradient>
                     <linearGradient id="book-left" x1="0" y1="0" x2="1" y2="1">
-                        <stop offset="0%" stopColor="#818cf8" />
-                        <stop offset="100%" stopColor="#6366f1" />
+                        <stop offset="0%" stopColor="#D8A47F" />
+                        <stop offset="100%" stopColor="#A47551" />
                     </linearGradient>
                     <linearGradient id="book-right" x1="1" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#a78bfa" />
-                        <stop offset="100%" stopColor="#7c3aed" />
+                        <stop offset="0%" stopColor="#C6A75E" />
+                        <stop offset="100%" stopColor="#7A9E7E" />
                     </linearGradient>
                     <linearGradient id="page-left" x1="0" y1="0" x2="1" y2="1">
                         <stop offset="0%" stopColor="#e0e7ff" />
@@ -38,7 +37,7 @@ function Mascot() {
                         <stop offset="100%" stopColor="#c4b5fd" />
                     </linearGradient>
                     <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
-                        <feDropShadow dx="0" dy="8" stdDeviation="12" floodColor="#6366f1" floodOpacity="0.35" />
+                        <feDropShadow dx="0" dy="8" stdDeviation="12" floodColor="#A47551" floodOpacity="0.3" />
                     </filter>
                 </defs>
 
@@ -113,24 +112,24 @@ function Mascot() {
 }
 
 export default function WelcomePage() {
-    const [leaving, setLeaving] = useState(false);
-
     return (
         <div
-            className="min-h-screen flex flex-col items-center justify-between py-10 px-6"
-            style={{ background: 'var(--bg-primary)' }}
+            className="min-h-screen flex flex-col items-center justify-between py-10 px-6 relative overflow-hidden"
         >
+            <div className="absolute inset-0 pointer-events-none opacity-60" style={{ backgroundImage: 'var(--batik-pattern)', backgroundSize: '24px 24px' }} />
+
             {/* Logo */}
             <motion.div
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
+                className="relative z-10"
             >
                 <Logo size={36} showText />
             </motion.div>
 
             {/* Center content */}
-            <div className="flex flex-col items-center text-center max-w-sm w-full">
+            <div className="flex flex-col items-center text-center max-w-sm w-full relative z-10">
                 {/* Mascot */}
                 <Mascot />
 
@@ -141,11 +140,11 @@ export default function WelcomePage() {
                     transition={{ delay: 0.5, duration: 0.5 }}
                     className="mt-6 space-y-2"
                 >
-                    <h1 className="text-3xl font-extrabold text-white leading-snug">
+                    <h1 className="text-5xl font-heading text-[var(--text-primary)] leading-[0.95]">
                         Cara seru belajar
                         <br />
                         <span style={{
-                            background: 'linear-gradient(135deg, #c4b5fd, #818cf8)',
+                            background: 'linear-gradient(135deg, var(--jawa-bluegray), var(--jawa-batik))',
                             WebkitBackgroundClip: 'text',
                             WebkitTextFillColor: 'transparent',
                             backgroundClip: 'text',
@@ -153,7 +152,7 @@ export default function WelcomePage() {
                             Matematika & PPKn!
                         </span>
                     </h1>
-                    <p className="text-white/40 text-base mt-3">
+                    <p className="text-[var(--text-secondary)] text-base mt-3">
                         Belajar dengan cara yang menyenangkan, capai target harianmu, dan raih bintang!
                     </p>
                 </motion.div>
@@ -164,25 +163,24 @@ export default function WelcomePage() {
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.7, duration: 0.5 }}
-                className="w-full max-w-sm space-y-3"
+                className="w-full max-w-sm space-y-3 relative z-10"
             >
                 <Link
                     href="/register"
-                    onClick={() => setLeaving(true)}
                     className="block w-full py-4 rounded-2xl text-center font-extrabold text-white text-base tracking-wide transition-all active:scale-95"
                     style={{
-                        background: 'linear-gradient(135deg, #6366f1 0%, #818cf8 100%)',
-                        boxShadow: '0 8px 32px rgba(99,102,241,0.4)',
+                        background: 'linear-gradient(135deg, var(--jawa-batik) 0%, var(--jawa-terracotta) 100%)',
+                        boxShadow: '0 10px 30px rgba(164,117,81,0.32)',
                     }}
                 >
                     MULAI BELAJAR
                 </Link>
                 <Link
                     href="/login"
-                    className="block w-full py-4 rounded-2xl text-center font-bold text-white/60 text-base tracking-wide transition-all active:scale-95 hover:text-white/90"
+                    className="block w-full py-4 rounded-2xl text-center font-bold text-[var(--text-secondary)] text-base tracking-wide transition-all active:scale-95 hover:text-[var(--text-primary)]"
                     style={{
-                        border: '1.5px solid rgba(255,255,255,0.12)',
-                        background: 'rgba(255,255,255,0.04)',
+                        border: '1.5px solid var(--border-medium)',
+                        background: 'var(--bg-surface-soft)',
                     }}
                 >
                     SUDAH PUNYA AKUN
