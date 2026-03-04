@@ -85,10 +85,10 @@ export default function Home() {
           animate={{ opacity: 1, y: 0 }}
           className="mb-5"
         >
-          <h1 className="text-4xl font-heading font-semibold leading-none text-[var(--text-primary)]">
+          <h1 className="text-4xl font-heading font-semibold leading-none text-[var(--text-primary)] drop-shadow-md">
             Halo, {username}! 👋
           </h1>
-          <p className="text-sm text-[var(--text-secondary)] mt-1">Siap belajar hari ini?</p>
+          <p className="text-sm text-[var(--text-secondary)] mt-1 drop-shadow-md">Siap belajar hari ini?</p>
         </motion.div>
 
         {/* Daily Target */}
@@ -185,7 +185,7 @@ export default function Home() {
         </div>
 
         {/* Pick subject */}
-        <h2 className="font-heading text-3xl leading-none text-[var(--text-primary)] mb-3">📚 Pilih Pelajaran</h2>
+        <h2 className="font-heading text-3xl leading-none text-[var(--text-primary)] mb-3 drop-shadow-md">📚 Pilih Pelajaran</h2>
 
         <div className="flex flex-col gap-3 mb-5">
           {[

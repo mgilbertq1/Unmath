@@ -186,8 +186,8 @@
     "username": "konyol",
     "passwordHash": "$2b$12$vpGs2RQ5CPcEGfa495.rK.yoqjUbUdCNRW/tbMuLaLVvfwfpVXm5K",
     "createdAt": "2026-02-24T02:28:16.243Z",
-    "totalXP": 130,
-    "gems": 75,
+    "totalXP": 334,
+    "gems": 135,
     "avatar": "👩‍🎓",
     "loginStreak": 1,
     "longestStreak": 1,
@@ -199,7 +199,7 @@
           "id": 1,
           "status": "completed",
           "bestStars": 1,
-          "bestXP": 20
+          "bestXP": 38
         },
         {
           "id": 2,
@@ -229,13 +229,13 @@
       "pkn": [
         {
           "id": 1,
-          "status": "available",
-          "bestStars": 0,
+          "status": "completed",
+          "bestStars": 3,
           "bestXP": 0
         },
         {
           "id": 2,
-          "status": "locked",
+          "status": "available",
           "bestStars": 0,
           "bestXP": 0
         },
@@ -262,7 +262,7 @@
     "dailyHistory": [
       {
         "date": "2026-03-03",
-        "xp": 130,
+        "xp": 334,
         "levelsPlayed": 0
       }
     ],
@@ -307,7 +307,7 @@
         "name": "Sempurna!",
         "description": "Raih 3 bintang di satu level",
         "emoji": "💯",
-        "earned": false
+        "earned": true
       },
       {
         "id": "speed_demon",

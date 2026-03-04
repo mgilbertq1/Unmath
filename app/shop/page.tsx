@@ -48,8 +48,8 @@ export default function ShopPage() {
                 {/* Header */}
                 <div className="flex items-center justify-between mb-6">
                     <div>
-                        <h1 className="text-5xl font-heading leading-none text-[var(--text-primary)]">🛒 Toko</h1>
-                        <p className="text-sm text-[var(--text-secondary)] mt-0.5">Beli power-up dengan gems</p>
+                        <h1 className="text-5xl font-heading leading-none text-[var(--text-primary)] drop-shadow-md">🛒 Toko</h1>
+                        <p className="text-sm text-[var(--text-secondary)] mt-0.5 drop-shadow-md">Beli power-up dengan gems</p>
                     </div>
                     <motion.div
                         animate={{ scale: [1, 1.05, 1] }}
