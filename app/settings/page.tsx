@@ -69,7 +69,7 @@ export default function SettingsPage() {
                     <div className="flex items-center justify-between">
                         <div>
                             <h3 className="text-sm font-bold text-[var(--text-primary)]">🔊 Efek Suara</h3>
-                            <p className="text-xs text-[var(--text-secondary)] mt-0.5">Suara saat menjawab soal</p>
+                            <p className="text-xs text-[var(--text-secondary)] mt-0.5">Musik latar dan suara permainan</p>
                         </div>
                         <motion.button
                             onClick={toggleSound}
@@ -104,7 +104,7 @@ export default function SettingsPage() {
                     <div className="space-y-2 text-xs text-[var(--text-secondary)]">
                         <div className="flex justify-between">
                             <span>Versi</span>
-                            <span className="text-[var(--text-primary)] font-bold">1.0.0</span>
+                            <span className="text-[var(--text-primary)] font-bold">1.0.5</span>
                         </div>
                         <div className="flex justify-between">
                             <span>Platform</span>

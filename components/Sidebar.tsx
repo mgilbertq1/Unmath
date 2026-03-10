@@ -109,7 +109,7 @@ export function DesktopSidebar() {
           <IconLogout size={18} className="group-hover:text-[var(--jawa-batik)] transition-colors" />
           Keluar
         </button>
-        <p className="text-[10px] text-[var(--text-muted)] text-center">Unmath v1.0</p>
+        <p className="text-[10px] text-[var(--text-muted)] text-center">Unmath v1.0.5</p>
       </div>
     </aside>
   );

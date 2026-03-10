@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { useGameStore } from '@/lib/store/game-store';
@@ -50,10 +50,34 @@ function WayanSilhouette({ align }: { align: 'left' | 'right' }) {
     );
 }
 
+/* --- Helper for Audio Fading --- */
+function fadeAudio(audio: HTMLAudioElement, targetVolume: number, durationMs: number = 1000): Promise<void> {
+    return new Promise((resolve) => {
+        const startVolume = audio.volume;
+        const volumeDiff = targetVolume - startVolume;
+        const startTime = performance.now();
+
+        function animate(currentTime: number) {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / durationMs, 1);
+            
+            // Linear fade
+            audio.volume = Math.max(0, Math.min(1, startVolume + (volumeDiff * progress)));
+            
+            if (progress < 1) {
+                requestAnimationFrame(animate);
+            } else {
+                resolve();
+            }
+        }
+        
+        requestAnimationFrame(animate);
+    });
+}
 export default function LevelMap({ subject }: LevelMapProps) {
     const router = useRouter();
     const { levels, leaderboard } = useGameStore();
-    const { totalXP, loginStreak, gems } = useUserStore();
+    const { totalXP, loginStreak, gems, soundEnabled } = useUserStore();
     const levelDefs = getLevelDefs(subject);
     const levelStates = levels[subject];
     const containerRef = useRef<HTMLDivElement>(null);
@@ -66,6 +90,11 @@ export default function LevelMap({ subject }: LevelMapProps) {
 
     const handlePlay = (levelId: number) => {
         router.push(`/game/${subject}?level=${levelId}`);
+    };
+    
+    // Similarly handle back navigation fade out
+    const handleBack = () => {
+        router.push('/');
     };
 
     // Zigzag alignment per node exactly mimicking mockup positions
@@ -134,7 +163,7 @@ export default function LevelMap({ subject }: LevelMapProps) {
                 <motion.button
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
-                    onClick={() => router.push('/')}
+                    onClick={handleBack}
                     className="flex items-center justify-center shrink-0"
                     style={{
                         width: 34, height: 34, borderRadius: '50%',

@@ -35,6 +35,39 @@ export default function GameEngine({ subject, levelId, questions }: GameEnginePr
     const [unlockTriggered, setUnlockTriggered] = useState(false);
     const [showCelebration, setShowCelebration] = useState(false);
 
+    // Audio refs
+    const themeAudioRef = useRef<HTMLAudioElement | null>(null);
+    const wrongAudioRef = useRef<HTMLAudioElement | null>(null);
+
+    // Initialize audio
+    useEffect(() => {
+        themeAudioRef.current = new Audio('/sounds/backsound.mp3');
+        themeAudioRef.current.loop = true;
+        // set moderate volume for background music
+        themeAudioRef.current.volume = 0.3;
+
+        wrongAudioRef.current = new Audio('/sounds/wrong.ogg');
+        wrongAudioRef.current.volume = 0.8;
+
+        return () => {
+            if (themeAudioRef.current) {
+                themeAudioRef.current.pause();
+                themeAudioRef.current = null;
+            }
+        };
+    }, []);
+
+    // Control theme music based on settings and game state
+    useEffect(() => {
+        if (!themeAudioRef.current) return;
+        
+        if (userStore.soundEnabled && !store.isGameComplete && !store.isGameOver) {
+            themeAudioRef.current.play().catch(e => console.warn('Audio play prevented', e));
+        } else {
+            themeAudioRef.current.pause();
+        }
+    }, [userStore.soundEnabled, store.isGameComplete, store.isGameOver]);
+
     // Task 5: per-question timer
     const [timeLeft, setTimeLeft] = useState(30);
     const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -58,6 +91,12 @@ export default function GameEngine({ subject, levelId, questions }: GameEnginePr
                     store.answerQuestion('', false);
                     userStore.consumeLife();
                     setLastCorrect(false);
+                    
+                    if (userStore.soundEnabled && wrongAudioRef.current) {
+                        wrongAudioRef.current.currentTime = 0;
+                        wrongAudioRef.current.play().catch(e => console.warn('Audio play prevented', e));
+                    }
+
                     setChecked(true);
                     setGivenAnswer('');
                     setEarnedPoints(0);
@@ -140,7 +179,13 @@ export default function GameEngine({ subject, levelId, questions }: GameEnginePr
             setGivenAnswer(Array.isArray(given) ? given.join(', ') : given);
             setEarnedPoints(store.xp - xpBefore);
             // Task 4: consume daily life on wrong answer
-            if (!isCorrect) userStore.consumeLife();
+            if (!isCorrect) {
+                 userStore.consumeLife();
+                 if (userStore.soundEnabled && wrongAudioRef.current) {
+                     wrongAudioRef.current.currentTime = 0;
+                     wrongAudioRef.current.play().catch(e => console.warn('Audio play prevented', e));
+                 }
+            }
             // Task 6: track consecutive quick answers for speed_demon badge
             if (isCorrect && quickAnswer) {
                 const newCount = userStore.consecutiveQuickAnswers + 1;

@@ -186,12 +186,12 @@
     "username": "konyol",
     "passwordHash": "$2b$12$vpGs2RQ5CPcEGfa495.rK.yoqjUbUdCNRW/tbMuLaLVvfwfpVXm5K",
     "createdAt": "2026-02-24T02:28:16.243Z",
-    "totalXP": 334,
+    "totalXP": 394,
     "gems": 135,
     "avatar": "👩‍🎓",
     "loginStreak": 1,
     "longestStreak": 1,
-    "lastLoginDate": "2026-03-03",
+    "lastLoginDate": "2026-03-10",
     "dailyTarget": 30,
     "levels": {
       "math": [
@@ -209,7 +209,7 @@
         },
         {
           "id": 3,
-          "status": "available",
+          "status": "completed",
           "bestStars": 0,
           "bestXP": 0
         },
@@ -260,6 +260,11 @@
       ]
     },
     "dailyHistory": [
+      {
+        "date": "2026-03-10",
+        "xp": 60,
+        "levelsPlayed": 0
+      },
       {
         "date": "2026-03-03",
         "xp": 334,

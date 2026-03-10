@@ -7,6 +7,7 @@ import confetti from 'canvas-confetti';
 import { AnswerRecord, Subject } from '@/lib/types';
 import { TOTAL_LEVELS } from '@/lib/levels/level-definitions';
 import { computeStars, calcGems } from '@/lib/store/game-store';
+import { useUserStore } from '@/lib/store/user-store';
 
 interface ResultScreenProps {
     answers: AnswerRecord[];
@@ -38,7 +39,9 @@ export default function ResultScreen({
     onRestart,
 }: ResultScreenProps) {
     const router = useRouter();
+    const { soundEnabled } = useUserStore();
     const hasPlayedConfetti = useRef(false);
+    const hasPlayedAudio = useRef(false);
     const [expandedPembahasan, setExpandedPembahasan] = useState<number | null>(null);
     const correctCount = answers.filter((a) => a.isCorrect).length;
     const accuracy = answers.length > 0 ? Math.round((correctCount / answers.length) * 100) : 0;
@@ -66,8 +69,12 @@ export default function ResultScreen({
             fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8 });
             fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 });
             fire(0.1, { spread: 120, startVelocity: 45 });
+        } else if (isGameOver && soundEnabled && !hasPlayedAudio.current) {
+            hasPlayedAudio.current = true;
+            const audio = new Audio('/sounds/spin fail.mp3');
+            audio.play().catch(e => console.warn('Game over audio prevented', e));
         }
-    }, [isGameOver, stars]);
+    }, [isGameOver, stars, soundEnabled]);
 
     return (
         <div className="max-w-lg mx-auto w-full">
